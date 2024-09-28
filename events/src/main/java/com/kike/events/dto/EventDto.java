@@ -35,7 +35,7 @@ public class EventDto {
     private BigDecimal price;
 
     @Schema(
-            description = "Price for signing up", example = "154"
+            description = "Unique identifier for vendor", example = "154"
     )
     @Positive(message = "Vendor must be a positive number")
     private int vendorId;
