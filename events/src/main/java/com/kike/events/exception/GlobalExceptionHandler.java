@@ -44,4 +44,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponseDto);
     }
+
+    @ExceptionHandler(value = ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.NOT_FOUND,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponseDto);
+    }
 }

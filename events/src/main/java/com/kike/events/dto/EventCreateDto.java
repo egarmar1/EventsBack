@@ -11,11 +11,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Schema(
-        name = "Event",
-        description = "Schema to hold the event information"
+        name = "EventCreate",
+        description = "Schema to hold to create an event"
 )
 @Data
-public class EventDto {
+public class EventCreateDto {
+
 
 
     @Schema(description = "Title of the Event ", example = "Bachata Class in center of Valencia")
