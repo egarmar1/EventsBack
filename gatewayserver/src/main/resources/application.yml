@@ -7,8 +7,20 @@ spring:
   cloud:
     gateway:
       discovery:
-        located:
-          enabled: true
+        locator:
+          enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+#  endpoint:
+#    gateway:
+#      enabled: true #Try to uncomment it when there are no routes
+#  info:
+#    env:
+#      enabled: true
 
 
 eureka:
