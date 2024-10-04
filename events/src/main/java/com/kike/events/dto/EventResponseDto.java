@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -15,6 +17,8 @@ import java.math.BigDecimal;
         description = "Schema to hold the event information for response"
 )
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EventResponseDto {
 
 
@@ -43,4 +47,14 @@ public class EventResponseDto {
             description = "Availability of the event, it shows wether is posible to book a place or not", example = "AVAILABLE"
     )
     private Availability availability;
+
+    @Schema(
+            description = "Maximum number of accepted bookings in an event", example = "50"
+    )
+    private Long maxNumBookings;
+
+    @Schema(
+            description = "Current number of accepted bookings in an event", example = "50"
+    )
+    private Long currentNumBookings;
 }

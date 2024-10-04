@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
         description = "Schema to hold to create an event"
 )
 @Data
+@AllArgsConstructor
 public class EventCreateDto {
 
 
@@ -46,4 +48,9 @@ public class EventCreateDto {
     )
     @NotNull(message = "The type of availability cannot be null")
     private Availability availability;
+
+    @Schema(
+            description = "Maximum number of accepted bookings in an event", example = "50"
+    )
+    private Long maxNumBookings;
 }

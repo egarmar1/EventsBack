@@ -12,6 +12,8 @@ public class EventCreateMapper {
         eventCreateDto.setPrice(event.getPrice());
         eventCreateDto.setTitle(event.getTitle());
         eventCreateDto.setVendorId(event.getVendorId());
+        eventCreateDto.setMaxNumBookings(event.getMaxNumBookings());
+
         return eventCreateDto;
     }
     public static EventResponseDto mapToEventResponseDto(Event event, EventResponseDto eventResponseDto) {
@@ -21,6 +23,9 @@ public class EventCreateMapper {
         eventResponseDto.setTitle(event.getTitle());
         eventResponseDto.setVendorId(event.getVendorId());
         eventResponseDto.setId(event.getId());
+        eventResponseDto.setMaxNumBookings(event.getMaxNumBookings());
+        eventResponseDto.setCurrentNumBookings(event.getCurrentNumBookings());
+
         return eventResponseDto;
     }
 
@@ -31,6 +36,7 @@ public class EventCreateMapper {
         event.setTitle(eventCreateDto.getTitle());
         event.setVendorId(eventCreateDto.getVendorId());
         event.setPrice(eventCreateDto.getPrice());
+        event.setMaxNumBookings(eventCreateDto.getMaxNumBookings());
 
         return event;
     }

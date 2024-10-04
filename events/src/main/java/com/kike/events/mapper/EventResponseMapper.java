@@ -13,6 +13,8 @@ public class EventResponseMapper {
         eventResponseDto.setTitle(event.getTitle());
         eventResponseDto.setVendorId(event.getVendorId());
         eventResponseDto.setId(event.getId());
+        eventResponseDto.setMaxNumBookings(event.getMaxNumBookings());
+        eventResponseDto.setCurrentNumBookings(event.getCurrentNumBookings());
         return eventResponseDto;
     }
 
@@ -24,6 +26,8 @@ public class EventResponseMapper {
         event.setTitle(eventResponseDto.getTitle());
         event.setVendorId(eventResponseDto.getVendorId());
         event.setPrice(eventResponseDto.getPrice());
+        event.setMaxNumBookings(eventResponseDto.getMaxNumBookings());
+        event.setCurrentNumBookings(eventResponseDto.getCurrentNumBookings());
 
         return event;
     }

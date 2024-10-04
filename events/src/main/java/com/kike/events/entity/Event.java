@@ -18,8 +18,9 @@ public class Event extends BaseEntity{
     private String description;
     private BigDecimal price;
     private int vendorId;
-
     @Enumerated(EnumType.STRING)
     private Availability availability;
+    private Long maxNumBookings;
+    private Long currentNumBookings;
 
 }

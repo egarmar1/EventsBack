@@ -59,4 +59,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(errorResponseDto);
     }
+
+    @ExceptionHandler(value = CurrentBookingsGreaterThanMaxException.class)
+    public ResponseEntity<ErrorResponseDto> handleCurrentBookingsGreaterThanMaxException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponseDto);
+    }
 }

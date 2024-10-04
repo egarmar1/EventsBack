@@ -1,10 +1,7 @@
 package com.kike.events.controller;
 
 import com.kike.events.constants.EventConstants;
-import com.kike.events.dto.ErrorResponseDto;
-import com.kike.events.dto.EventCreateDto;
-import com.kike.events.dto.EventResponseDto;
-import com.kike.events.dto.ResponseDto;
+import com.kike.events.dto.*;
 import com.kike.events.service.IEventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +21,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @Tag(
         name = "CRUD REST API for events in FASTBOOK",
-        description = "CRUD REST APIs for events in EAZYBANK to CREATE," +
+        description = "CRUD REST APIs for events in FASTBOOK to CREATE," +
                 " UPDATE, FETCH AND DELETE account details "
 )
 @RestController
@@ -56,7 +53,6 @@ public class EventController {
             }
 
     )
-
     @PostMapping("/create")
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto) {
 
@@ -131,9 +127,9 @@ public class EventController {
 
     )
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateEvent(@Valid @RequestBody EventResponseDto eventResponseDto) {
+    public ResponseEntity<ResponseDto> updateEvent(@Valid @RequestBody EventUpdateDto eventUpdateDto) {
 
-        boolean isUpdated = iEventService.updateEvent(eventResponseDto);
+        boolean isUpdated = iEventService.updateEvent(eventUpdateDto);
 
         if (isUpdated)
             return ResponseEntity
@@ -182,4 +178,20 @@ public class EventController {
                 .status(OK)
                 .body(new ResponseDto(STATUS_200, MESSAGE_200));
     }
+
+    @PutMapping("/update/currentBookingsCount")
+    public ResponseEntity<ResponseDto> updateCurrentBookingsCount(@Valid @RequestParam Long eventId) {
+
+        boolean isUpdated = iEventService.increaseCurrentBookings(eventId);
+
+        if (isUpdated)
+            return ResponseEntity
+                    .status(OK)
+                    .body(new ResponseDto(STATUS_200, MESSAGE_200));
+        else
+            return ResponseEntity
+                    .status(EXPECTATION_FAILED)
+                    .body(new ResponseDto(STATUS_417, MESSAGE_417_UPDATE));
+    }
+
 }
