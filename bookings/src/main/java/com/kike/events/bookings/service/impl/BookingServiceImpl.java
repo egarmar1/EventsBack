@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ public class BookingServiceImpl implements IBookingService {
 
 
     @Override
+
     public void createBooking(BookingDto bookingDto) {
 
         Optional<Booking> existingBooking = bookingRepository.findByUserIdAndServiceId(bookingDto.getUserId(), bookingDto.getEventId());

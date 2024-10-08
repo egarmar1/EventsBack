@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class EventController {
+
+    private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     IEventService iEventService;
 
@@ -57,6 +61,9 @@ public class EventController {
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto) {
 
         EventResponseDto eventResponseDto = iEventService.createEvent(eventCreateDto);
+
+        log.info("Executing method createEvent");
+
 
         return ResponseEntity
                 .status(CREATED)
@@ -184,6 +191,7 @@ public class EventController {
 
         boolean isUpdated = iEventService.increaseCurrentBookings(eventId);
 
+        log.info("Inside updateCurrentBookingsCount");
         if (isUpdated)
             return ResponseEntity
                     .status(OK)
