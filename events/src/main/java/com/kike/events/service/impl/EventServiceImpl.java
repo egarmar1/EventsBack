@@ -61,6 +61,9 @@ public class EventServiceImpl implements IEventService {
 
         Event eventUpdated = EventUpdateMapper.mapToEvents(eventUpdateDto, new Event());
 
+
+        // We set the currentNumBookings with the current value
+        eventUpdated.setCurrentNumBookings(event.getCurrentNumBookings());
         eventRepository.save(eventUpdated);
 
         isUpdated = true;

@@ -100,8 +100,11 @@ public class EventController {
     @GetMapping("/fetch")
     public ResponseEntity<EventResponseDto> fetchEvent(@Valid @RequestParam Long id) {
 
+        log.info("Fetch method before getting event");
+
         EventResponseDto eventResponseDto = iEventService.fetchEvent(id);
 
+        log.info("Fetch method after getting event {}", eventResponseDto);
         return ResponseEntity
                 .status(OK)
                 .body(eventResponseDto);
@@ -179,6 +182,7 @@ public class EventController {
     public ResponseEntity<ResponseDto> deleteEvent(@RequestParam Long id) {
 
         iEventService.deleteEvent(id);
+
 
 
         return ResponseEntity

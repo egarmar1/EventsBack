@@ -5,22 +5,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Schema(
         name = "BookingDto",
-        description = "Schema to hold the information of a booking"
+        description = "Schema to hold booking information"
 )
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookingDto {
-
-
-
-    @Schema(description = "Unique identifier of the user", example = "12459018745")
-    @NotNull(message = "User id cannot be emtpy")
-    private Long userId;
 
     @Schema(
             description = "Unique identifier of the service ", example = "12459018745"
@@ -38,4 +34,6 @@ public class BookingDto {
     )
     @NotNull(message = "The state cannot be null")
     private State state;
+
+
 }

@@ -4,7 +4,6 @@ import com.kike.events.bookings.constants.State;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,8 +14,8 @@ public class Booking extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
-    private Long serviceId;
+    private String userId;
+    private Long eventId;
     private LocalDateTime bookDate;
     @Enumerated(EnumType.STRING)
     private State state;

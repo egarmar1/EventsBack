@@ -6,20 +6,21 @@ import com.kike.events.bookings.entity.Booking;
 public class BookingMapper {
 
     public static BookingDto mapToBookingDto(Booking booking, BookingDto bookingDto) {
-        bookingDto.setUserId(booking.getUserId());
+
+
         bookingDto.setBookDate(booking.getBookDate());
         bookingDto.setState(booking.getState());
-        bookingDto.setEventId(booking.getServiceId());
+        bookingDto.setEventId(booking.getEventId());
 
         return bookingDto;
     }
 
 
     public static Booking mapToBooking(BookingDto bookingDto, Booking booking) {
+
         booking.setBookDate(bookingDto.getBookDate());
         booking.setState(bookingDto.getState());
-        booking.setUserId(bookingDto.getUserId());
-        booking.setServiceId(bookingDto.getEventId());
+        booking.setEventId(bookingDto.getEventId());
 
         return booking;
     }

@@ -45,6 +45,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnauthorizedException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.UNAUTHORIZED,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
+
     @ExceptionHandler(value = ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(Exception exc, WebRequest webReq){
 
