@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -83,13 +82,11 @@ public class BookingController {
 
     )
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingDto bookingDto, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingDto bookingDto,
+                                                     @RequestParam(required = false) String userId,
+                                                     @AuthenticationPrincipal Jwt jwt) {
 
-        if(jwt == null)
-            throw new UnauthorizedException("Oauth2 access token is required");
-
-        String userId = jwtService.getUserId(jwt);
-        iBookingService.createBooking(bookingDto, userId);
+        iBookingService.createBooking(bookingDto, userId, jwt);
 
         return ResponseEntity
                 .status(CREATED)
@@ -177,14 +174,11 @@ public class BookingController {
 
     )
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updatebooking(@Valid @RequestBody BookingDto bookingDto, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<ResponseDto> updatebooking(@Valid @RequestBody BookingDto bookingDto,
+                                                     @RequestParam(required = false) String userId,
+                                                     @AuthenticationPrincipal Jwt jwt) {
 
-        if(jwt == null)
-            throw new UnauthorizedException("Oauth2 access token is required");
-
-        String userId = jwtService.getUserId(jwt);
-
-        boolean isUpdated = iBookingService.updatebooking(bookingDto, userId);
+        boolean isUpdated = iBookingService.updatebooking(bookingDto, userId, jwt);
 
         if (isUpdated)
             return ResponseEntity
@@ -238,11 +232,11 @@ public class BookingController {
 
     )
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deletebooking(@RequestParam Long eventId, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<ResponseDto> deletebooking(@RequestParam Long eventId,
+                                                     @RequestParam(required = false) String userId,
+                                                     @AuthenticationPrincipal Jwt jwt) {
 
-        String userId = jwtService.getUserId(jwt);
-
-        iBookingService.deletebooking(eventId, userId);
+        iBookingService.deleteBooking(eventId, userId, jwt);
 
         return ResponseEntity
                 .status(OK)

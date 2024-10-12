@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/bookings/pom.xml" />
         <option value="$PROJECT_DIR$/eurekaserver/pom.xml" />
         <option value="$PROJECT_DIR$/gatewayserver/pom.xml" />
+        <option value="$PROJECT_DIR$/suscription/pom.xml" />
+        <option value="$PROJECT_DIR$/user/pom.xml" />
       </list>
     </option>
   </component>

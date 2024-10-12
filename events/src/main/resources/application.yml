@@ -17,6 +17,17 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  cloud:
+    function:
+      definition: deleteBookingsOfEvent
+    stream:
+      bindings:
+        deleteBookingsOfEvent-out-0:
+          destination: bookings-of-event-deletion-trigger
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
 
 management:
   endpoints:

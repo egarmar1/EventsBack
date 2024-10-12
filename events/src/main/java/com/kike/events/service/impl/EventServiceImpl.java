@@ -14,6 +14,7 @@ import com.kike.events.service.IEventService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +25,7 @@ public class EventServiceImpl implements IEventService {
     private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
     private EventRepository eventRepository;
+    private StreamBridge streamBridge;
 
     @Override
     public EventResponseDto createEvent(EventCreateDto eventCreateDto) {
@@ -79,6 +81,7 @@ public class EventServiceImpl implements IEventService {
         );
 
         eventRepository.deleteById(id);
+        streamBridge.send("deleteBookingsOfEvent-out-0",id);
 
     }
 
