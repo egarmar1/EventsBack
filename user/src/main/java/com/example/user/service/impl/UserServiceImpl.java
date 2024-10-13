@@ -7,8 +7,12 @@ import com.example.user.exception.ResourceNotFoundException;
 import com.example.user.mapper.UserMapper;
 import com.example.user.repository.UserRepository;
 import com.example.user.service.IUserService;
+import lombok.AllArgsConstructor;
 import org.apache.catalina.mbeans.UserMBean;
+import org.springframework.stereotype.Service;
 
+@Service
+@AllArgsConstructor
 public class UserServiceImpl implements IUserService {
 
     private UserRepository userRepository;
