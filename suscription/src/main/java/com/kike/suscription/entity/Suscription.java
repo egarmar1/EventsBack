@@ -14,7 +14,7 @@ public class Suscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userId;
+    private String clientId;
     private String vendorId;
 
 }

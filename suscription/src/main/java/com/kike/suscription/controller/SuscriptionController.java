@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -27,10 +27,30 @@ public class SuscriptionController {
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createSuscription(@Valid @RequestBody SuscriptionDto suscriptionDto) {
 
-        ResponseDto eventResponseDto = suscriptionService.createSuscription(suscriptionDto);
+        suscriptionService.createSuscription(suscriptionDto);
 
         return ResponseEntity
                 .status(CREATED)
-                .body(eventResponseDto);
+                .body(new ResponseDto("200","OK"));
     }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<List<String>> fetchSuscriptionsByClientId(@RequestParam String clientId) {
+
+        List<String> vendorIds = suscriptionService.fetchVendorIdsByClientId(clientId);
+
+        return ResponseEntity
+                .status(OK)
+                .body(vendorIds);
+    }
+    @GetMapping("/fetch")
+    public ResponseEntity<List<String>> fetchSuscriptionsByVendorId(@RequestParam String vendorId) {
+
+        List<String> vendorIds = suscriptionService.fetchClientIdsByVendorId(vendorId);
+
+        return ResponseEntity
+                .status(OK)
+                .body(vendorIds);
+    }
+
 }

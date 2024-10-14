@@ -1,8 +1,8 @@
 package com.example.user.controller;
 
-import com.example.user.constants.UserConstants;
 import com.example.user.dto.ResponseDto;
 import com.example.user.dto.UserDto;
+import com.example.user.dto.UserTypeDto;
 import com.example.user.service.IUserService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.user.constants.UserConstants.*;
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @Tag(
@@ -34,10 +33,21 @@ public class UserController {
     @PutMapping("/updateInfo")
     public ResponseEntity<ResponseDto> updateUserInfo(@Valid @RequestBody UserDto userDto) {
 
-        userService.updateInfo(userDto);
+        userService.updateUserInfo(userDto);
 
         return ResponseEntity
                 .status(OK)
                 .body(new ResponseDto(STATUS_200, MESSAGE_200));
     }
+
+
+    @GetMapping("/type")
+    public ResponseEntity<UserTypeDto> getType(@RequestParam String userId){
+
+
+        UserTypeDto userType = userService.getUserTypeByUserId(userId);
+
+        return ResponseEntity.status(OK).body(userType);
+    }
+
 }

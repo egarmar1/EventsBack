@@ -45,7 +45,13 @@ public class GatewayserverApplication {
                                 .circuitBreaker(config -> config.setName("bookingCircuitBreaker")
                                         .setFallbackUri("forward:/contactSupport"))
                         )
-                        .uri("lb://BOOKING")).build();
+                        .uri("lb://BOOKING"))
+                .route(p -> p
+                        .path("/fastbook/suscription/**")
+                        .filters(f -> f.rewritePath("/fastbook/suscription/(?<segment>.*)", "/${segment}")
+                        )
+                        .uri("lb://SUSCRIPTION")).build();
+
 
     }
 

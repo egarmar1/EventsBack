@@ -7,14 +7,14 @@ public class SuscriptionMapper {
 
     public static SuscriptionDto mapToSuscriptionDto(Suscription suscription, SuscriptionDto suscriptionDto){
         suscriptionDto.setVendorId(suscription.getVendorId());
-        suscriptionDto.setUserId(suscription.getUserId());
+        suscriptionDto.setClientId(suscription.getClientId());
 
         return suscriptionDto;
     }
 
     public static Suscription mapToSuscription( SuscriptionDto suscriptionDto, Suscription suscription){
         suscription.setVendorId(suscriptionDto.getVendorId());
-        suscription.setUserId(suscriptionDto.getUserId());
+        suscription.setClientId(suscriptionDto.getClientId());
 
         return suscription;
     }

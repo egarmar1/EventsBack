@@ -1,9 +1,12 @@
 package com.kike.suscription.service;
 
-import com.kike.suscription.dto.ResponseDto;
 import com.kike.suscription.dto.SuscriptionDto;
+
+import java.util.List;
 
 public interface ISuscriptionService {
 
-    ResponseDto createSuscription(SuscriptionDto suscriptionDto);
+    void createSuscription(SuscriptionDto suscriptionDto);
+
+    List<String> fetchVendorIdsByClientId(String clientId);
 }
