@@ -10,4 +10,6 @@ public interface SuscriptionRepository extends JpaRepository<Suscription, Long> 
     Optional<Suscription> findByClientIdAndVendorId(String userId, String vendorId);
 
     List<Suscription> findByClientId(String clientId);
+
+    List<Suscription> findByVendorId(String vendorId);
 }

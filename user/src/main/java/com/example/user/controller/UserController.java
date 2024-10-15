@@ -30,6 +30,16 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private IUserService userService;
 
+    @GetMapping("/fetchUserInfo")
+    public ResponseEntity<UserDto> fetchUserInfo(@RequestParam String userId) {
+
+        UserDto userDto = userService.fetchUserInfo(userId);
+
+
+        return ResponseEntity
+                .status(OK)
+                .body(userDto);
+    }
     @PutMapping("/updateInfo")
     public ResponseEntity<ResponseDto> updateUserInfo(@Valid @RequestBody UserDto userDto) {
 

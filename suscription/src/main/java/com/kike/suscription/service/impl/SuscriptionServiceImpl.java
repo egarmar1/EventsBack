@@ -5,6 +5,7 @@ import com.kike.suscription.dto.SuscriptionDto;
 import com.kike.suscription.dto.clients.UserTypeDto;
 import com.kike.suscription.entity.Suscription;
 import com.kike.suscription.exception.IncorrectTypeOfUserException;
+import com.kike.suscription.exception.ResourceNotFoundException;
 import com.kike.suscription.exception.SuscriptionAlreadyExistsException;
 import com.kike.suscription.mapper.SuscriptionMapper;
 import com.kike.suscription.repository.SuscriptionRepository;
@@ -58,6 +59,23 @@ public class SuscriptionServiceImpl implements ISuscriptionService {
         return suscriptionRepository.findByClientId(clientId).stream()
                 .map(Suscription::getVendorId)
                 .toList();
+    }
+
+    @Override
+    public List<String> fetchClientIdsByVendorId(String vendorId) {
+
+        return suscriptionRepository.findByVendorId(vendorId).stream()
+                .map(Suscription::getClientId)
+                .toList();
+    }
+
+    @Override
+    public void deleteSuscription(String clientId, String vendorId) {
+        Suscription suscription = suscriptionRepository.findByClientIdAndVendorId(clientId, vendorId).orElseThrow(
+                () -> new ResourceNotFoundException("Suscription", "clientId and vendorId", clientId + " and " + vendorId)
+        );
+
+        suscriptionRepository.deleteById(suscription.getId());
     }
 
     private void checkIfsuscriptionDoesntExist(String userId, String vendorId) {

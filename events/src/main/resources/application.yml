@@ -19,11 +19,13 @@ spring:
     show-sql: true
   cloud:
     function:
-      definition: deleteBookingsOfEvent
+      definition: deleteBookingsOfEvent;eventCreated
     stream:
       bindings:
         deleteBookingsOfEvent-out-0:
           destination: bookings-of-event-deletion-trigger
+        eventCreated-out-0:
+          destination: event-creation-trigger
       kafka:
         binder:
           brokers:

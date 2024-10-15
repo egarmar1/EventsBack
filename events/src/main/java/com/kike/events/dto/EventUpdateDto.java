@@ -43,7 +43,7 @@ public class EventUpdateDto {
             description = "Unique identifier for vendor", example = "154"
     )
     @Positive(message = "Vendor must be a positive number")
-    private int vendorId;
+    private String vendorId;
 
     @Schema(
             description = "Availability of the event, it shows wether is posible to book a place or not", example = "AVAILABLE"

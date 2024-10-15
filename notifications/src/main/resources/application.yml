@@ -1,0 +1,40 @@
+server:
+  port: 9010
+
+spring:
+  application:
+    name: "notifications"
+  cloud:
+    function:
+      definition: eventCreated;sendEmail
+    stream:
+      bindings:
+        eventCreated-in-0:
+          destination: event-creation-trigger
+        sendEmail-out-0:
+          destination: email-notification
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8071/eureka/

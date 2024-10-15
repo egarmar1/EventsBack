@@ -4,6 +4,7 @@ import com.kike.suscription.dto.ResponseDto;
 import com.kike.suscription.dto.SuscriptionDto;
 import com.kike.suscription.service.ISuscriptionService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,8 @@ public class SuscriptionController {
                 .body(new ResponseDto("200","OK"));
     }
 
-    @GetMapping("/fetch")
-    public ResponseEntity<List<String>> fetchSuscriptionsByClientId(@RequestParam String clientId) {
+    @GetMapping("/fetch/clientId/{clientId}")
+    public ResponseEntity<List<String>> fetchSuscriptionsByClientId(@PathVariable String clientId) {
 
         List<String> vendorIds = suscriptionService.fetchVendorIdsByClientId(clientId);
 
@@ -43,14 +44,24 @@ public class SuscriptionController {
                 .status(OK)
                 .body(vendorIds);
     }
-    @GetMapping("/fetch")
-    public ResponseEntity<List<String>> fetchSuscriptionsByVendorId(@RequestParam String vendorId) {
+    @GetMapping("/fetch/vendorId/{vendorId}")
+    public ResponseEntity<List<String>> fetchSuscriptionsByVendorId(@PathVariable String vendorId) {
 
-        List<String> vendorIds = suscriptionService.fetchClientIdsByVendorId(vendorId);
+        List<String> clientIds = suscriptionService.fetchClientIdsByVendorId(vendorId);
 
         return ResponseEntity
                 .status(OK)
-                .body(vendorIds);
+                .body(clientIds);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteSuscription(@RequestParam String clientId, @RequestParam String vendorId) {
+
+        suscriptionService.deleteSuscription(clientId, vendorId);
+
+        return ResponseEntity
+                .status(OK)
+                .body(new ResponseDto("200", "Suscription deleted successfully"));
     }
 
 }

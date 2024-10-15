@@ -30,20 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(errorResponseDto);
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception exc, WebRequest webReq){
 
-        var errorResponseDto = new ErrorResponseDto(
-                webReq.getDescription(false),
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                exc.getMessage(),
-                LocalDateTime.now()
-                );
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errorResponseDto);
-    }
 
     @ExceptionHandler(value = SuscriptionAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleSuscriptionAlreadyExistsException(Exception exc, WebRequest webReq){
@@ -89,5 +76,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception exc, WebRequest webReq){
 
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponseDto);
+    }
 }

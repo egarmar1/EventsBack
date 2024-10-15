@@ -41,9 +41,7 @@ public class UserServiceImpl implements IUserService {
                 () -> new ResourceNotFoundException("User", "userId", userId)
         );
 
-        UserDto userDto = UserMapper.mapToUserDto(user, new UserDto());
-
-        return userDto;
+        return UserMapper.mapToUserDto(user, new UserDto());
     }
 
     @Override

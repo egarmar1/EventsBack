@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,8 @@ public class EventController {
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     IEventService iEventService;
+
+    StreamBridge streamBridge;
 
     @Operation(
             summary = "Create event REST API",
@@ -59,10 +62,13 @@ public class EventController {
     )
     @PostMapping("/create")
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto) {
-
+        log.info("Executing method createEvent");
         EventResponseDto eventResponseDto = iEventService.createEvent(eventCreateDto);
 
-        log.info("Executing method createEvent");
+        log.info("Executing middle method createEvent");
+        streamBridge.send("event-creation-trigger",
+                eventResponseDto);
+        log.info("Executing end createEvent");
 
 
         return ResponseEntity
