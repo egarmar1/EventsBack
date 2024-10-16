@@ -3,11 +3,15 @@ package com.example.user.controller;
 import com.example.user.dto.ResponseDto;
 import com.example.user.dto.UserDto;
 import com.example.user.dto.UserTypeDto;
+import com.example.user.entity.Users;
+import com.example.user.repository.UserRepository;
 import com.example.user.service.IUserService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -40,6 +44,7 @@ public class UserController {
                 .status(OK)
                 .body(userDto);
     }
+
     @PutMapping("/updateInfo")
     public ResponseEntity<ResponseDto> updateUserInfo(@Valid @RequestBody UserDto userDto) {
 

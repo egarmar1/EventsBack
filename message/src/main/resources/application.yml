@@ -1,0 +1,48 @@
+server:
+  port: 9030
+
+spring:
+  application:
+    name: "message"
+  cloud:
+    function:
+      definition: sendEmail
+    stream:
+      bindings:
+        sendEmail-in-0:
+          destination: email-notification
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_TOKEN}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8071/eureka/

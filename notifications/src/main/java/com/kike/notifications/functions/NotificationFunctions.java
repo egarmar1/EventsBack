@@ -41,11 +41,12 @@ public class NotificationFunctions {
             userIds.forEach(userId -> {
                 UserDto clientDto = userFeignClient.fetchUserInfo(userId).getBody();
 
-                streamBridge.send("email-notification",
-                        new EmailDto("kikegm2001@gmail.com",
+                EmailDto email = new EmailDto("kikegm2001@gmail.com",
                         "New event from " + vendorDto.getFullName(),
-                                eventInfo.getTitle() + "\n" + eventInfo.getDescription(),
-                                clientDto.getEmail(), LocalDateTime.now()));
+                        eventInfo.getTitle() + "\n" + eventInfo.getDescription(),
+                        clientDto.getEmail(), LocalDateTime.now());
+
+                streamBridge.send("email-notification",email);
             });
 
 
