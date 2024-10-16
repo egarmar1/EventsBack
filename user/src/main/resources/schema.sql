@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS user_type (
 );
 
 INSERT INTO users (id, full_name, email, type_id, created_at, created_by, updated_at, updated_by) VALUES
-('ea9493bf-496e-4c32-9e61-d673c92812cb', 'John Doe', 'kikesimp01@gmail.com', 1, NOW(), 'system', NULL, NULL), -- Client user
-('c21a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor1', 'zxc@example.com', 2, NOW(), 'system', NULL, NULL), -- Vendor user
+('4565934b-210c-4b0b-a384-09956802afb4', 'John Doe', 'kikesimp01@gmail.com', 1, NOW(), 'system', NULL, NULL), -- Client user
+('dcd81b43-f0cc-4848-b8ae-a636b2c14b61', 'Vendor1', 'zxc@example.com', 2, NOW(), 'system', NULL, NULL), -- Vendor user
 (UUID(), 'Bob Johnson', 'bob.johnson@example.com', 1, NOW(), 'system', NULL, NULL), -- Client user
 ('c31a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor2', 'bob.johnson@example.com', 2, NOW(), 'system', NULL, NULL); -- Vendor user
 
