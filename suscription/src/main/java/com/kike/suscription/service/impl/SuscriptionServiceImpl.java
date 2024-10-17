@@ -11,6 +11,7 @@ import com.kike.suscription.mapper.SuscriptionMapper;
 import com.kike.suscription.repository.SuscriptionRepository;
 import com.kike.suscription.service.ISuscriptionService;
 import com.kike.suscription.service.client.UserFeignClient;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class SuscriptionServiceImpl implements ISuscriptionService {
 
         String clientId = suscriptionDto.getClientId();
         String vendorId = suscriptionDto.getVendorId();
+
 
         checkIfsuscriptionDoesntExist(clientId, vendorId);
         ResponseEntity<UserTypeDto> clientTypeResponse = userFeignClient.getType(clientId);

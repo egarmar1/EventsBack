@@ -28,7 +28,7 @@ spring:
         binder:
           brokers:
             - localhost:9092
-
+## Kafka aquí sobra
 management:
   endpoints:
     web:

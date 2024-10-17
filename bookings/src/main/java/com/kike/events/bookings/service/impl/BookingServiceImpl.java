@@ -4,6 +4,7 @@ import com.kike.events.bookings.dto.BookingDto;
 import com.kike.events.bookings.dto.ResponseDto;
 import com.kike.events.bookings.entity.Booking;
 import com.kike.events.bookings.exception.BookingAlreadyExistsException;
+import com.kike.events.bookings.exception.MissingUserIdFromAdminException;
 import com.kike.events.bookings.exception.ResourceNotFoundException;
 import com.kike.events.bookings.exception.UnauthorizedException;
 import com.kike.events.bookings.mapper.BookingMapper;
@@ -12,6 +13,7 @@ import com.kike.events.bookings.service.IBookingService;
 import com.kike.events.bookings.service.auth.JwtService;
 import com.kike.events.bookings.service.client.EventsFeignClient;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,11 +39,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public void createBooking(BookingDto bookingDto, String userId, Jwt jwt) {
 
-        if(jwt == null)
-            throw new UnauthorizedException("Oauth2 access token is required");
-
-        String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
-                userId : jwtService.getUserId(jwt);
+        String actualUserId = getTargetUserId(userId, jwt);
 
         Optional<Booking> existingBooking = bookingRepository.findByUserIdAndEventId(actualUserId, bookingDto.getEventId());
 
@@ -72,11 +70,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public boolean updatebooking(BookingDto bookingDto, String userId, Jwt jwt) {
 
-        if(jwt == null)
-            throw new UnauthorizedException("Oauth2 access token is required");
-
-        String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
-                userId : jwtService.getUserId(jwt);
+        String actualUserId = getTargetUserId(userId, jwt);
 
         Booking booking = bookingRepository.findByUserIdAndEventId(userId, bookingDto.getEventId()).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " " + bookingDto.getEventId() + " respectively"));
@@ -90,16 +84,25 @@ public class BookingServiceImpl implements IBookingService {
         return true;
     }
 
+    @NotNull
+    private String getTargetUserId(String userId, Jwt jwt) {
+        if(jwt == null)
+            throw new UnauthorizedException("Oauth2 access token is required");
+
+        String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
+                userId : jwtService.getUserId(jwt);
+
+        if(actualUserId.isEmpty())
+            throw new MissingUserIdFromAdminException();
+
+        return actualUserId;
+    }
+
     @Override
     public void deleteBooking(Long eventId, String userId, Jwt jwt) {
 
 
-        if(jwt == null)
-            throw new UnauthorizedException("Oauth2 access token is required");
-
-        // If the user is admin, then it chooses the userId, if not it's own userId is taken
-        String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
-                userId : jwtService.getUserId(jwt);
+        String actualUserId = getTargetUserId(userId, jwt);
 
         Booking booking = bookingRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " " + eventId + " respectively"));

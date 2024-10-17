@@ -121,6 +121,13 @@
 			<artifactId>okta-jwt-verifier</artifactId>
 			<version>0.5.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>1.13.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

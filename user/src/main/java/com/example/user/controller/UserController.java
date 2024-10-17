@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.example.user.constants.UserConstants.*;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -38,6 +40,16 @@ public class UserController {
     public ResponseEntity<UserDto> fetchUserInfo(@RequestParam String userId) {
 
         UserDto userDto = userService.fetchUserInfo(userId);
+
+
+        return ResponseEntity
+                .status(OK)
+                .body(userDto);
+    }
+    @GetMapping("/fetchAllUsersInfo")
+    public ResponseEntity<List<UserDto>> fetchAllUsersInfo() {
+
+        List<UserDto> userDto = userService.fetchAllUsersInfo();
 
 
         return ResponseEntity

@@ -50,7 +50,12 @@ public class GatewayserverApplication {
                         .path("/fastbook/suscription/**")
                         .filters(f -> f.rewritePath("/fastbook/suscription/(?<segment>.*)", "/${segment}")
                         )
-                        .uri("lb://SUSCRIPTION")).build();
+                        .uri("lb://SUSCRIPTION"))
+                .route(p -> p
+                .path("/fastbook/users/**")
+                .filters(f -> f.rewritePath("/fastbook/users/(?<segment>.*)", "/${segment}")
+                )
+                .uri("lb://USERS")).build();
 
 
     }

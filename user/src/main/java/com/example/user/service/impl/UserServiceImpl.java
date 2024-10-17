@@ -13,6 +13,8 @@ import com.example.user.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements IUserService {
@@ -55,6 +57,13 @@ public class UserServiceImpl implements IUserService {
         );
 
         return UserTypeMapper.mapToUserTypeDto(userType, new UserTypeDto());
+    }
+
+    @Override
+    public List<UserDto> fetchAllUsersInfo() {
+        return userRepository.findAll().stream()
+                .map(user -> UserMapper.mapToUserDto(user, new UserDto()))
+                .toList();
     }
 
 
