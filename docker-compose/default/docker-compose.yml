@@ -276,6 +276,9 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8071/eureka/"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
+
+      OTEL_SERVICE_NAME: "bookings"
+
     depends_on:
       eurekaserver:
         condition: service_healthy

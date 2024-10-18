@@ -51,7 +51,12 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<version>1.13.6</version>
 		</dependency>
-
+		<dependency>
+			<groupId>io.opentelemetry.javaagent</groupId>
+			<artifactId>opentelemetry-javaagent</artifactId>
+			<version>1.33.5</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

@@ -8,7 +8,12 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: false
+          enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:8060/realms/master/protocol/openid-connect/certs"
 
 management:
   endpoints:
@@ -34,3 +39,7 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: "http://localhost:8071/eureka/"
+
+logging:
+  pattern:
+    level: "%5p[${spring.application.name},%X{trace_id},%X{span_id}]"

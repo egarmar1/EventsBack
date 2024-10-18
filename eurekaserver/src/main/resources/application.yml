@@ -33,3 +33,7 @@ eureka:
     registerWithEureka: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+logging:
+  pattern:
+    level: "%5p[${spring.application.name},%X{trace_id},%X{span_id}]"
