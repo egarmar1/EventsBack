@@ -20,7 +20,10 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
 
-        serverHttpSecurity.authorizeExchange(exchange -> exchange.pathMatchers("/fastbook/**").hasRole("USER"))
+        serverHttpSecurity.authorizeExchange(exchange -> exchange
+                        .pathMatchers("/fastbook/**").hasRole("USER")
+                        .pathMatchers("/actuator/**").permitAll()
+                )
                 .oauth2ResourceServer(o -> o.jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
 
         serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);

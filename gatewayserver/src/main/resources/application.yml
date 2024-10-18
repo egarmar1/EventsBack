@@ -9,29 +9,21 @@ spring:
       discovery:
         locator:
           enabled: false
-  data:
-    redis:
-      connect-timeout: 2s
-      host: localhost
-      port: 6379
-      timeout: 1s
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: "http://localhost:8060/realms/master/protocol/openid-connect/certs"
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-#  endpoint:
-#    gateway:
-#      enabled: true #Try to uncomment it when there are no routes
-#  info:
-#    env:
-#      enabled: true
+  endpoint:
+    gateway:
+      enabled: true #Try to uncomment it when there are no routes
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 
 eureka:
@@ -42,12 +34,3 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: "http://localhost:8071/eureka/"
-
-resilience4j.circuitbreaker:
-  configs:
-    default:
-      slidingWindowSize: 10
-      permittedNumberOfCallsInHalfOpenState: 2
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
-
