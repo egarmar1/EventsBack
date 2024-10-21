@@ -16,6 +16,8 @@ public interface IBookingService {
 
     void deleteAllbookingsWithEventId(Long eventId);
 
+    void setBookingAsAttended(Long eventId, String userId, Jwt jwt);
+
 //    BookingDto fetchBooking(Long userId, Long serviceId);
 //
 //    boolean updateBooking(BookingDto bookingDto);

@@ -1,6 +1,7 @@
 package com.kike.events.bookings.controller;
 
 
+import com.kike.events.bookings.constants.BookingConstants;
 import com.kike.events.bookings.dto.BookingDto;
 import com.kike.events.bookings.dto.ErrorResponseDto;
 import com.kike.events.bookings.dto.ResponseDto;
@@ -40,8 +41,6 @@ public class BookingController {
 
     IBookingService iBookingService;
 
-    private final JwtDecoder jwtDecoder;
-    private final JwtService jwtService;
     private static final Logger log = LoggerFactory.getLogger(BookingController.class);
 
     @Operation(
@@ -241,5 +240,56 @@ public class BookingController {
         return ResponseEntity
                 .status(OK)
                 .body(new ResponseDto(STATUS_200, MESSAGE_200));
+    }
+
+
+    @Operation(
+            summary = "Set as marked booking REST API",
+            description = "REST API for vendors to mark the booking of a user as attended." +
+                    " This is used when the vendors check users at the moment they attend to the event",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP Status OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP Status BAD REQUEST",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "HTTP Status UNAUTHORIZED",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP Status NOT FOUND",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP Status INTERNAL SERVER ERROR",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
+            }
+
+    )
+    @PutMapping("/setAsAttended")
+    public ResponseEntity<ResponseDto> setBookingAsAttended(@RequestParam Long eventId,
+                                                          @RequestParam String userId,
+                                                          @AuthenticationPrincipal Jwt jwt){
+
+        iBookingService.setBookingAsAttended(eventId,userId,jwt);
+
+        return ResponseEntity.status(OK).body(new ResponseDto(STATUS_200, MESSAGE_200));
     }
 }

@@ -1,0 +1,59 @@
+server:
+  port: 9050
+
+spring:
+  application:
+    name: "eventsHistory"
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ''
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cloud:
+    function:
+      definition: createEventHistory;
+    stream:
+      bindings:
+        createEventHistory-in-0:
+          destination: create-event-history
+          group: ${spring.application.name}
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8071/eureka/
+
+logging:
+  pattern:
+    level: "%5p[${spring.application.name},%X{trace_id},%X{span_id}]"

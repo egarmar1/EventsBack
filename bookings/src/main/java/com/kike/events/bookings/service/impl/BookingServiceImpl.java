@@ -1,21 +1,26 @@
 package com.kike.events.bookings.service.impl;
 
+import com.kike.events.bookings.constants.HistoryType;
+import com.kike.events.bookings.constants.State;
 import com.kike.events.bookings.dto.BookingDto;
 import com.kike.events.bookings.dto.ResponseDto;
+import com.kike.events.bookings.dto.client.EventsHistoryDto;
+import com.kike.events.bookings.dto.client.UserTypeDto;
 import com.kike.events.bookings.entity.Booking;
-import com.kike.events.bookings.exception.BookingAlreadyExistsException;
-import com.kike.events.bookings.exception.MissingUserIdFromAdminException;
-import com.kike.events.bookings.exception.ResourceNotFoundException;
-import com.kike.events.bookings.exception.UnauthorizedException;
+import com.kike.events.bookings.exception.*;
 import com.kike.events.bookings.mapper.BookingMapper;
 import com.kike.events.bookings.repository.BookingRepository;
 import com.kike.events.bookings.service.IBookingService;
 import com.kike.events.bookings.service.auth.JwtService;
 import com.kike.events.bookings.service.client.EventsFeignClient;
+import com.kike.events.bookings.service.client.EventsHistoryFeignClient;
+import com.kike.events.bookings.service.client.UserFeignClient;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -32,7 +37,11 @@ public class BookingServiceImpl implements IBookingService {
 
     private BookingRepository bookingRepository;
     private EventsFeignClient eventsFeignClient;
+    private EventsHistoryFeignClient eventsHistoryFeignClient;
+    private UserFeignClient userFeignClient;
     private JwtService jwtService;
+    private StreamBridge streamBridge;
+
     private static final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 
@@ -51,10 +60,14 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = BookingMapper.mapToBooking(bookingDto, new Booking());
         booking.setUserId(actualUserId);
 
-        ResponseEntity<ResponseDto> responseDtoResponseEntity = eventsFeignClient.updateCurrentBookingsCount(bookingDto.getEventId());
+        eventsFeignClient.updateCurrentBookingsCount(bookingDto.getEventId());
+        bookingRepository.save(booking);
 
-        if (responseDtoResponseEntity.getStatusCode() == HttpStatus.OK)
-            bookingRepository.save(booking);
+        EventsHistoryDto eventsHistoryDto = new EventsHistoryDto(booking.getUserId(),
+                booking.getEventId(),
+                HistoryType.BOOKED_EVENT);
+
+        streamBridge.send("create-event-history", eventsHistoryDto);
 
     }
 
@@ -86,13 +99,13 @@ public class BookingServiceImpl implements IBookingService {
 
     @NotNull
     private String getTargetUserId(String userId, Jwt jwt) {
-        if(jwt == null)
+        if (jwt == null)
             throw new UnauthorizedException("Oauth2 access token is required");
 
         String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
                 userId : jwtService.getUserId(jwt);
 
-        if(actualUserId.isEmpty())
+        if (actualUserId.isEmpty())
             throw new MissingUserIdFromAdminException();
 
         return actualUserId;
@@ -116,6 +129,37 @@ public class BookingServiceImpl implements IBookingService {
         List<Booking> bookings = bookingRepository.findByEventId(eventId);
 
         bookings.forEach(booking -> bookingRepository.deleteById(booking.getId()));
+    }
+
+    @Override
+    public void setBookingAsAttended(Long eventId, String userId, Jwt jwt) {
+
+        checkTypeVendor(jwt.getClaim("sub"));
+
+
+        Booking booking = bookingRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(
+                () -> new ResourceNotFoundException("Booking",
+                        "userId or eventId", userId + " and " + eventId + " respectively"));
+
+        booking.setState(State.ATTENDED);
+
+        bookingRepository.save(booking);
+        EventsHistoryDto eventsHistoryDto = new EventsHistoryDto(userId, eventId, HistoryType.ATTENDED_EVENT);
+
+        log.info("eventsHistoryDto: " + eventsHistoryDto);
+
+        eventsHistoryFeignClient.updateEventHistory(eventsHistoryDto);
+
+
+    }
+
+    private void checkTypeVendor(String vendorId) {
+        ResponseEntity<UserTypeDto> typeResponse = userFeignClient.getType(vendorId);
+
+        String type = typeResponse.getBody().getType();
+
+        if (!type.equals("vendor"))
+            throw new IncorrectTypeOfUserException(vendorId, "vendor", type);
     }
 
 //    @Override

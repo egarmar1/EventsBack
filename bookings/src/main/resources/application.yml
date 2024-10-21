@@ -24,12 +24,14 @@ spring:
           jwk-set-uri: "http://localhost:8060/realms/master/protocol/openid-connect/certs"
   cloud:
     function:
-      definition: deleteBookingsOfEvent
+      definition: deleteBookingsOfEvent;createEventHistory
     stream:
       bindings:
         deleteBookingsOfEvent-in-0:
           destination: bookings-of-event-deletion-trigger
           group: ${spring.application.name}
+        createEventHistory-out-0:
+          destination: create-event-history
       kafka:
         binder:
           brokers:

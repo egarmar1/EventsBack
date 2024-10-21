@@ -1,20 +1,26 @@
 package com.kike.events.service.impl;
 
+import com.kike.events.constants.HistoryType;
 import com.kike.events.dto.EventCreateDto;
 import com.kike.events.dto.EventResponseDto;
 import com.kike.events.dto.EventUpdateDto;
+import com.kike.events.dto.client.EventsHistoryDto;
+import com.kike.events.dto.client.UserTypeDto;
 import com.kike.events.entity.Event;
 import com.kike.events.exception.CurrentBookingsGreaterThanMaxException;
+import com.kike.events.exception.IncorrectTypeOfUserException;
 import com.kike.events.exception.ResourceNotFoundException;
 import com.kike.events.mapper.EventCreateMapper;
 import com.kike.events.mapper.EventResponseMapper;
 import com.kike.events.mapper.EventUpdateMapper;
 import com.kike.events.repository.EventRepository;
 import com.kike.events.service.IEventService;
+import com.kike.events.service.client.UserFeignClient;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -26,15 +32,36 @@ public class EventServiceImpl implements IEventService {
 
     private EventRepository eventRepository;
     private StreamBridge streamBridge;
+    private UserFeignClient userFeignClient;
 
     @Override
     public EventResponseDto createEvent(EventCreateDto eventCreateDto) {
+
+        String vendorId = eventCreateDto.getVendorId();
+        checkTypeVendor(vendorId);
+
 
         Event event = EventCreateMapper.mapToEvents(eventCreateDto, new Event());
         event.setCurrentNumBookings(0L);
         Event savedEvent = eventRepository.save(event);
 
+
+        EventsHistoryDto eventsHistoryDto = new EventsHistoryDto(vendorId,
+                savedEvent.getId(),
+                HistoryType.EVENT_ORGANIZED);
+
+        streamBridge.send("create-event-history", eventsHistoryDto);
+
         return EventResponseMapper.mapToEventResponseDto(savedEvent, new EventResponseDto());
+    }
+
+    private void checkTypeVendor(String vendorId) {
+        ResponseEntity<UserTypeDto> typeResponse = userFeignClient.getType(vendorId);
+
+        String type = typeResponse.getBody().getType();
+
+        if(!type.equals("vendor"))
+            throw new IncorrectTypeOfUserException(vendorId,"vendor", type);
     }
 
     @Override
@@ -47,6 +74,8 @@ public class EventServiceImpl implements IEventService {
 
     @Override
     public boolean updateEvent(EventUpdateDto eventUpdateDto) {
+
+        checkTypeVendor(eventUpdateDto.getVendorId());
 
         boolean isUpdated = false;
 

@@ -1,6 +1,7 @@
 package com.kike.events.bookings.exception;
 
 import com.kike.events.bookings.dto.ErrorResponseDto;
+import feign.FeignException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -105,5 +106,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(value = IncorrectTypeOfUserException.class)
+    public ResponseEntity<ErrorResponseDto> handleIncorrectTypeOfUserException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.UNAUTHORIZED,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(value = FeignException.NotFound.class)
+    public ResponseEntity<ErrorResponseDto> handleFeignExceptionNotFound(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.NOT_FOUND,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponseDto);
+    }
 
 }

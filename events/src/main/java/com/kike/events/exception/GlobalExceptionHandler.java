@@ -74,4 +74,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponseDto);
     }
+
+    @ExceptionHandler(value = IncorrectTypeOfUserException.class)
+    public ResponseEntity<ErrorResponseDto> handleIncorrectTypeOfUserException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.UNAUTHORIZED,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
 }
