@@ -3,7 +3,7 @@ package com.kike.events.bookings.service.impl;
 import com.kike.events.bookings.constants.HistoryType;
 import com.kike.events.bookings.constants.State;
 import com.kike.events.bookings.dto.BookingDto;
-import com.kike.events.bookings.dto.ResponseDto;
+import com.kike.events.bookings.dto.client.EventResponseDto;
 import com.kike.events.bookings.dto.client.EventsHistoryDto;
 import com.kike.events.bookings.dto.client.UserTypeDto;
 import com.kike.events.bookings.entity.Booking;
@@ -15,19 +15,18 @@ import com.kike.events.bookings.service.auth.JwtService;
 import com.kike.events.bookings.service.client.EventsFeignClient;
 import com.kike.events.bookings.service.client.EventsHistoryFeignClient;
 import com.kike.events.bookings.service.client.UserFeignClient;
-import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -49,6 +48,7 @@ public class BookingServiceImpl implements IBookingService {
     public void createBooking(BookingDto bookingDto, String userId, Jwt jwt) {
 
         String actualUserId = getTargetUserId(userId, jwt);
+        checkUserIsClientOrAdmin(jwt);
 
         Optional<Booking> existingBooking = bookingRepository.findByUserIdAndEventId(actualUserId, bookingDto.getEventId());
 
@@ -69,6 +69,15 @@ public class BookingServiceImpl implements IBookingService {
 
         streamBridge.send("create-event-history", eventsHistoryDto);
 
+    }
+
+    private void checkUserIsClientOrAdmin(Jwt jwt) {
+        String type = userFeignClient.getType(jwt.getClaim("sub")).getBody().getType();
+        boolean isAdmin = jwtService.getRealmRoles(jwt).contains("admin");
+
+
+        if(!Objects.equals(type, "client") && !isAdmin)
+            throw new UnauthorizedException("You are not a client, you are not able to create a booking");
     }
 
     @Override
@@ -134,7 +143,10 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public void setBookingAsAttended(Long eventId, String userId, Jwt jwt) {
 
-        checkTypeVendor(jwt.getClaim("sub"));
+        String sub = jwt.getClaim("sub");
+
+        checkTypeVendor(sub);
+        checkEventOwner(eventId, sub);
 
 
         Booking booking = bookingRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(
@@ -144,6 +156,8 @@ public class BookingServiceImpl implements IBookingService {
         booking.setState(State.ATTENDED);
 
         bookingRepository.save(booking);
+
+
         EventsHistoryDto eventsHistoryDto = new EventsHistoryDto(userId, eventId, HistoryType.ATTENDED_EVENT);
 
         log.info("eventsHistoryDto: " + eventsHistoryDto);
@@ -151,6 +165,15 @@ public class BookingServiceImpl implements IBookingService {
         eventsHistoryFeignClient.updateEventHistory(eventsHistoryDto);
 
 
+    }
+
+    private void checkEventOwner(Long eventId, String sub) {
+        ResponseEntity<EventResponseDto> eventResponse = eventsFeignClient.fetchEvent(eventId);
+
+        String vendorIdOfEvent = eventResponse.getBody().getVendorId();
+
+        if(!vendorIdOfEvent.equals(sub))
+            throw new UnauthorizedException("You are not the owner of the event with eventId: " + eventId);
     }
 
     private void checkTypeVendor(String vendorId) {

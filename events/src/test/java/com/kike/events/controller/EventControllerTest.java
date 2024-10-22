@@ -59,7 +59,7 @@ public class EventControllerTest {
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
         BigDecimal price = new BigDecimal("10.9");
-        int vendorId = 154;
+        String vendorId = "154";
         Availability availability = Availability.AVAILABLE;
         Long maxNumBookings = 154L;
 
@@ -84,7 +84,7 @@ public class EventControllerTest {
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
         BigDecimal price = new BigDecimal("10.9");
-        int vendorId = 154;
+        String vendorId = "154";
         Availability availability = Availability.AVAILABLE;
         Long maxNumBookings = 154L;
 
@@ -108,7 +108,7 @@ public class EventControllerTest {
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
         BigDecimal price = new BigDecimal("10.9");
-        int vendorId = 154;
+        String vendorId = "154";
         Availability availability = Availability.AVAILABLE;
         Long maxNumBookings = 154L;
 
