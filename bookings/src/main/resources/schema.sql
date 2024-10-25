@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS booking (
   id BIGINT NOT NULL AUTO_INCREMENT,
   user_id VARCHAR(255) NOT NULL,       -- ID of the user making the booking
   event_id BIGINT NOT NULL,          -- ID of the related service/event
+  qr_code_in_base64 VARCHAR(2048),
   book_date DATETIME NOT NULL,         -- Date and time of the booking
   state ENUM('PENDING', 'ACCEPTED', 'ATTENDED') NOT NULL,  -- Assuming the State enum has these values
   created_at DATETIME NOT NULL,        -- BaseEntity field: created timestamp

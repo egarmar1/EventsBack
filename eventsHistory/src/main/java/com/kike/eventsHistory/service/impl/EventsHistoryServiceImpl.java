@@ -57,7 +57,7 @@ public class EventsHistoryServiceImpl implements IEventsHistoryService {
     @Override
     public EventsHistoryDto fetchByUserId(String userId) {
 
-        EventsHistory eventsHistory = eventsHistoryRepository.findByUserId().orElseThrow(
+        EventsHistory eventsHistory = eventsHistoryRepository.findByUserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("EventHistory", "userId", userId)
         );
 

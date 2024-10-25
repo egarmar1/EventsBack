@@ -1,0 +1,3 @@
+com\example\keycloak\HttpEventListenerProviderFactory.class
+com\example\keycloak\HttpEventListenerProvider.class
+com\example\keycloak\App.class

@@ -17,6 +17,9 @@ public class Booking extends BaseEntity {
     private String userId;
     private Long eventId;
     private LocalDateTime bookDate;
+
+    @Column(name = "qr_code_in_base64", length = 2048)  // Aseguramos que tenga 2048 caracteres
+    private String qrUUID;
     @Enumerated(EnumType.STRING)
     private State state;
 

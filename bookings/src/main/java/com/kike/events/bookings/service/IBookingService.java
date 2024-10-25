@@ -1,22 +1,25 @@
 package com.kike.events.bookings.service;
 
-import com.kike.events.bookings.dto.BookingDto;
+import com.kike.events.bookings.dto.BookingCreateDto;
+import com.kike.events.bookings.dto.BookingResponseDto;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 
 public interface IBookingService {
 
-    void createBooking(BookingDto bookingDto, String userId, Jwt jwt);
+    void createBooking(BookingCreateDto bookingCreateDto, String userId, Jwt jwt);
 
-    BookingDto fetchbooking(Long eventId, String userId);
+    BookingResponseDto fetchbooking(Long eventId, String userId);
 
-    boolean updatebooking(BookingDto bookingDto, String userId, Jwt jwt);
+    boolean updatebooking(BookingCreateDto bookingCreateDto, String userId, Jwt jwt);
 
     void deleteBooking(Long eventId, String userId, Jwt jwt);
 
     void deleteAllbookingsWithEventId(Long eventId);
 
     void setBookingAsAttended(Long eventId, String userId, Jwt jwt);
+
+    byte[] fetchQr(Long bookingId, Jwt jwt);
 
 //    BookingDto fetchBooking(Long userId, Long serviceId);
 //

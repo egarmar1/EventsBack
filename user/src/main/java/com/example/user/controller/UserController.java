@@ -1,5 +1,6 @@
 package com.example.user.controller;
 
+import com.example.user.dto.KeyCloakEventDto;
 import com.example.user.dto.ResponseDto;
 import com.example.user.dto.UserDto;
 import com.example.user.dto.UserTypeDto;
@@ -46,6 +47,7 @@ public class UserController {
                 .status(OK)
                 .body(userDto);
     }
+
     @GetMapping("/fetchAllUsersInfo")
     public ResponseEntity<List<UserDto>> fetchAllUsersInfo() {
 
@@ -75,6 +77,12 @@ public class UserController {
         UserTypeDto userType = userService.getUserTypeByUserId(userId);
 
         return ResponseEntity.status(OK).body(userType);
+    }
+
+    @PutMapping("/updateUsersTableInfo")
+    public ResponseEntity<ResponseDto> updateUsersTableInfo(@RequestParam KeyCloakEventDto keyCloakEventDto){
+
+        return ResponseEntity.status(OK).body(new ResponseDto(STATUS_200,MESSAGE_200));
     }
 
 }

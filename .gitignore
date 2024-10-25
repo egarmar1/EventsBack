@@ -1,1 +1,10 @@
+# Ignorar archivos de entorno
+.env
+
+# Ignorar archivos de configuración del IDE
 .idea/
+
+
+*.token
+*.key
+*.pem

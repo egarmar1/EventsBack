@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
+public class BookingCreateDto {
 
     @Schema(
             description = "Unique identifier of the service ", example = "12459018745"

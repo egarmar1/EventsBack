@@ -1,13 +1,11 @@
 package com.kike.events.bookings.controller;
 
 
-import com.kike.events.bookings.constants.BookingConstants;
-import com.kike.events.bookings.dto.BookingDto;
+import com.kike.events.bookings.dto.BookingCreateDto;
+import com.kike.events.bookings.dto.BookingResponseDto;
 import com.kike.events.bookings.dto.ErrorResponseDto;
 import com.kike.events.bookings.dto.ResponseDto;
-import com.kike.events.bookings.exception.UnauthorizedException;
 import com.kike.events.bookings.service.IBookingService;
-import com.kike.events.bookings.service.auth.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kike.events.bookings.constants.BookingConstants.*;
@@ -31,7 +28,7 @@ import static org.springframework.http.HttpStatus.*;
 @Tag(
         name = "CRUD REST API for bookings in FASTBOOK",
         description = "CRUD REST APIs for bookings in FASTBOOK to CREATE," +
-                " UPDATE, FETCH AND DELETE bookings. For CREATE, UPDATE and DELETE jwt access token" +
+                " UPDATE, FETCH AND DELETE bookings. For CREATE, UPDATE and DELETE. jwt access token" +
                 " is needed since the userId is taken from that access token"
 )
 @RestController
@@ -81,11 +78,11 @@ public class BookingController {
 
     )
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingDto bookingDto,
+    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingCreateDto bookingCreateDto,
                                                      @RequestParam(required = false) String userId,
                                                      @AuthenticationPrincipal Jwt jwt) {
 
-        iBookingService.createBooking(bookingDto, userId, jwt);
+        iBookingService.createBooking(bookingCreateDto, userId, jwt);
 
         return ResponseEntity
                 .status(CREATED)
@@ -123,9 +120,9 @@ public class BookingController {
 
     )
     @GetMapping("/fetch")
-    public ResponseEntity<BookingDto> fetchbooking(@RequestParam Long eventId, @RequestParam String userId) {
+    public ResponseEntity<BookingResponseDto> fetchbooking(@RequestParam Long eventId, @RequestParam String userId) {
 
-        BookingDto bookingResponseDto = iBookingService.fetchbooking(eventId, userId);
+        BookingResponseDto bookingResponseDto = iBookingService.fetchbooking(eventId, userId);
 
         return ResponseEntity
                 .status(OK)
@@ -173,11 +170,11 @@ public class BookingController {
 
     )
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updatebooking(@Valid @RequestBody BookingDto bookingDto,
+    public ResponseEntity<ResponseDto> updatebooking(@Valid @RequestBody BookingCreateDto bookingCreateDto,
                                                      @RequestParam(required = false) String userId,
                                                      @AuthenticationPrincipal Jwt jwt) {
 
-        boolean isUpdated = iBookingService.updatebooking(bookingDto, userId, jwt);
+        boolean isUpdated = iBookingService.updatebooking(bookingCreateDto, userId, jwt);
 
         if (isUpdated)
             return ResponseEntity

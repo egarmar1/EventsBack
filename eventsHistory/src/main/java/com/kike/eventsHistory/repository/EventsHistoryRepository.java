@@ -12,5 +12,5 @@ public interface EventsHistoryRepository extends JpaRepository<EventsHistory,Lon
 
     Optional<EventsHistory> findByUserIdAndEventId(String userId, Long eventId);
 
-    Optional<EventsHistory> findByUserId();
+    Optional<EventsHistory> findByUserId(String userId);
 }

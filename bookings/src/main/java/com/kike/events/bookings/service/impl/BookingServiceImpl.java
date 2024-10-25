@@ -1,20 +1,26 @@
 package com.kike.events.bookings.service.impl;
 
+import com.google.zxing.common.BitMatrix;
 import com.kike.events.bookings.constants.HistoryType;
 import com.kike.events.bookings.constants.State;
-import com.kike.events.bookings.dto.BookingDto;
+import com.kike.events.bookings.dto.BookingCreateDto;
+import com.kike.events.bookings.dto.BookingKafkaMessageDto;
+import com.kike.events.bookings.dto.BookingResponseDto;
 import com.kike.events.bookings.dto.client.EventResponseDto;
 import com.kike.events.bookings.dto.client.EventsHistoryDto;
 import com.kike.events.bookings.dto.client.UserTypeDto;
 import com.kike.events.bookings.entity.Booking;
 import com.kike.events.bookings.exception.*;
-import com.kike.events.bookings.mapper.BookingMapper;
+import com.kike.events.bookings.mapper.BookingCreateMapper;
+import com.kike.events.bookings.mapper.BookingKafkaMessageMapper;
+import com.kike.events.bookings.mapper.BookingResponseMapper;
 import com.kike.events.bookings.repository.BookingRepository;
 import com.kike.events.bookings.service.IBookingService;
 import com.kike.events.bookings.service.auth.JwtService;
 import com.kike.events.bookings.service.client.EventsFeignClient;
 import com.kike.events.bookings.service.client.EventsHistoryFeignClient;
 import com.kike.events.bookings.service.client.UserFeignClient;
+import com.kike.events.bookings.utils.QRUtility;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -28,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -45,31 +52,48 @@ public class BookingServiceImpl implements IBookingService {
 
 
     @Override
-    public void createBooking(BookingDto bookingDto, String userId, Jwt jwt) {
+    public void createBooking(BookingCreateDto bookingCreateDto, String userId, Jwt jwt) {
 
         String actualUserId = getTargetUserId(userId, jwt);
         checkUserIsClientOrAdmin(jwt);
 
-        Optional<Booking> existingBooking = bookingRepository.findByUserIdAndEventId(actualUserId, bookingDto.getEventId());
+        Optional<Booking> existingBooking = bookingRepository.findByUserIdAndEventId(actualUserId, bookingCreateDto.getEventId());
 
         if (existingBooking.isPresent())
-            throw new BookingAlreadyExistsException("The book with serviceId: " +
-                    bookingDto.getEventId() + " and userId: " +
+            throw new BookingAlreadyExistsException("The book with eventId: " +
+                    bookingCreateDto.getEventId() + " and userId: " +
                     actualUserId + " already exists");
 
-        Booking booking = BookingMapper.mapToBooking(bookingDto, new Booking());
+        Booking booking = BookingCreateMapper.mapToBooking(bookingCreateDto, new Booking());
         booking.setUserId(actualUserId);
 
-        eventsFeignClient.updateCurrentBookingsCount(bookingDto.getEventId());
-        bookingRepository.save(booking);
+        UUID randomUUID = UUID.randomUUID();
+
+        BitMatrix qrCodeMatrix = QRUtility.generateQRCode(randomUUID.toString());
+        QRUtility.saveQRLocally(qrCodeMatrix,randomUUID);
+        booking.setQrUUID(randomUUID.toString());
+
+        eventsFeignClient.updateCurrentBookingsCount(bookingCreateDto.getEventId());
+        Booking bookingSaved = bookingRepository.save(booking);
 
         EventsHistoryDto eventsHistoryDto = new EventsHistoryDto(booking.getUserId(),
                 booking.getEventId(),
                 HistoryType.BOOKED_EVENT);
 
+
+
+        BookingKafkaMessageDto bookingKafkaMessageDto = BookingKafkaMessageMapper.mapToBookingDto(bookingSaved, new BookingKafkaMessageDto());
+        bookingKafkaMessageDto.setJwt(jwt);
+        log.info("The BookingKafkaMessageDto before sending to notifications is: " + bookingKafkaMessageDto);
+
+        streamBridge.send("bookingQrCodeCreated", bookingKafkaMessageDto);
+
+
         streamBridge.send("create-event-history", eventsHistoryDto);
 
     }
+
+
 
     private void checkUserIsClientOrAdmin(Jwt jwt) {
         String type = userFeignClient.getType(jwt.getClaim("sub")).getBody().getType();
@@ -81,24 +105,24 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    public BookingDto fetchbooking(Long eventId, String userId) {
+    public BookingResponseDto fetchbooking(Long eventId, String userId) {
 
         Booking booking = bookingRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "userId or eventId", userId + " and " + eventId + " respectively"));
 
-        return BookingMapper.mapToBookingDto(booking, new BookingDto());
+        return BookingResponseMapper.mapToBookingDto(booking, new BookingResponseDto());
     }
 
     @Override
-    public boolean updatebooking(BookingDto bookingDto, String userId, Jwt jwt) {
+    public boolean updatebooking(BookingCreateDto bookingCreateDto, String userId, Jwt jwt) {
 
         String actualUserId = getTargetUserId(userId, jwt);
 
-        Booking booking = bookingRepository.findByUserIdAndEventId(userId, bookingDto.getEventId()).orElseThrow(() ->
-                new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " " + bookingDto.getEventId() + " respectively"));
+        Booking booking = bookingRepository.findByUserIdAndEventId(userId, bookingCreateDto.getEventId()).orElseThrow(() ->
+                new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " and " + bookingCreateDto.getEventId() + " respectively"));
 
 
-        BookingMapper.mapToBooking(bookingDto, booking);
+        BookingCreateMapper.mapToBooking(bookingCreateDto, booking);
         booking.setUserId(userId);
 
         bookingRepository.save(booking);
@@ -126,8 +150,8 @@ public class BookingServiceImpl implements IBookingService {
 
         String actualUserId = getTargetUserId(userId, jwt);
 
-        Booking booking = bookingRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
-                new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " " + eventId + " respectively"));
+        Booking booking = bookingRepository.findByUserIdAndEventId(actualUserId, eventId).orElseThrow(() ->
+                new ResourceNotFoundException("Booking", "userId or eventId", actualUserId + " and " + eventId + " respectively"));
 
         bookingRepository.deleteById(booking.getId());
     }
@@ -165,6 +189,19 @@ public class BookingServiceImpl implements IBookingService {
         eventsHistoryFeignClient.updateEventHistory(eventsHistoryDto);
 
 
+    }
+
+    @Override
+    public byte[] fetchQr(Long bookingId, Jwt jwt) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+                () -> new ResourceNotFoundException("Booking", "bookingId", bookingId.toString()));
+
+        String sub = jwt.getClaim("sub");
+        if(!Objects.equals(sub, booking.getUserId()) && !jwtService.getRealmRoles(jwt).contains("admin")){
+            throw new UnauthorizedException("You are not allowed to see this resource");
+        }
+
+        return QRUtility.loadLocalQR(booking.getQrUUID());
     }
 
     private void checkEventOwner(Long eventId, String sub) {

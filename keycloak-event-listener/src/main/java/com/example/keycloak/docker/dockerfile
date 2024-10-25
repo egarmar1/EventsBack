@@ -1,0 +1,23 @@
+FROM ubuntu:20.04
+
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y curl vim default-jdk
+
+# Descargar e instalar Keycloak manualmente
+RUN curl -L https://github.com/keycloak/keycloak/releases/download/26.0.1/keycloak-26.0.1.tar.gz -o /tmp/keycloak.tar.gz \
+    && tar -xvzf /tmp/keycloak.tar.gz -C /opt \
+    && mv /opt/keycloak-26.0.1 /opt/keycloak \
+    && rm /tmp/keycloak.tar.gz
+
+# Establecer el directorio de trabajo
+WORKDIR /opt/keycloak
+
+# Configurar el usuario y contraseña de administrador
+ENV KC_BOOTSTRAP_ADMIN_USERNAME=admin
+ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+
+# Exponer el puerto de Keycloak
+EXPOSE 8080
+
+# Comando para iniciar Keycloak en modo de desarrollo
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]

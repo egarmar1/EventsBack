@@ -10,6 +10,7 @@
         <module name="eurekaserver" />
         <module name="gatewayserver" />
         <module name="eventsHistory" />
+        <module name="keycloak-event-listener" />
         <module name="suscription" />
         <module name="bookings" />
         <module name="message" />
@@ -26,6 +27,7 @@
       <module name="events" options="-parameters" />
       <module name="eventsHistory" options="-parameters" />
       <module name="gatewayserver" options="-parameters" />
+      <module name="keycloak-event-listener" options="" />
       <module name="message" options="-parameters" />
       <module name="notifications" options="-parameters" />
       <module name="suscription" options="-parameters" />

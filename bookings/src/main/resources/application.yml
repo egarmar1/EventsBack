@@ -32,6 +32,8 @@ spring:
           group: ${spring.application.name}
         createEventHistory-out-0:
           destination: create-event-history
+        bookingQrCodeCreated-out-0:
+          destination: bookingQrCodeCreated
       kafka:
         binder:
           brokers:

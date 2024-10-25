@@ -1,18 +1,20 @@
 server:
-  port: 9010
+  port: 9011
 
 spring:
   application:
     name: "notifications"
   cloud:
     function:
-      definition: eventCreated;sendEmail
+      definition: eventCreated;sendEmail;bookingQrCodeCreated
     stream:
       bindings:
         eventCreated-in-0:
           destination: event-creation-trigger
         sendEmail-out-0:
           destination: email-notification
+        bookingQrCodeCreated-in-0:
+          destination: bookingQrCodeCreated
       kafka:
         binder:
           brokers:
