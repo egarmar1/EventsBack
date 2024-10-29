@@ -1,6 +1,7 @@
 package com.kike.events.bookings.controller;
 
 
+import com.kike.events.bookings.constants.State;
 import com.kike.events.bookings.dto.BookingCreateDto;
 import com.kike.events.bookings.dto.BookingResponseDto;
 import com.kike.events.bookings.dto.ErrorResponseDto;
@@ -20,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.kike.events.bookings.constants.BookingConstants.*;
 
@@ -120,13 +123,56 @@ public class BookingController {
 
     )
     @GetMapping("/fetch")
-    public ResponseEntity<BookingResponseDto> fetchbooking(@RequestParam Long eventId, @RequestParam String userId) {
+    public ResponseEntity<BookingResponseDto> fetchbooking(@RequestParam Long eventId,
+                                                           @RequestParam(required = false) String userId,
+                                                           @AuthenticationPrincipal Jwt jwt) {
 
-        BookingResponseDto bookingResponseDto = iBookingService.fetchbooking(eventId, userId);
+        BookingResponseDto bookingResponseDto = iBookingService.fetchbooking(eventId, userId, jwt);
 
         return ResponseEntity
                 .status(OK)
                 .body(bookingResponseDto);
+    }
+
+    @Operation(
+            summary = "Fetch bookings of a user by state REST API ",
+            description = "REST API to fetch bookings of a specific user  by state inside FASTBOOK ",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP Status OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP Status BAD REQUEST"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP Status NOT FOUND",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP Status INTERNAL SERVER ERROR",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
+            }
+
+    )
+    @GetMapping("/fetchOfUserByState")
+    public ResponseEntity<List<BookingResponseDto>> fetchbookingsOfUserByState(@RequestParam String userId,
+                                                                               @RequestParam State state,
+                                                                               @AuthenticationPrincipal Jwt jwt) {
+
+        List<BookingResponseDto> bookingResponsesDto = iBookingService.fetchBookingsOfUserByState(userId, state, jwt);
+
+        return ResponseEntity
+                .status(OK)
+                .body(bookingResponsesDto);
     }
 
     @Operation(
@@ -281,11 +327,10 @@ public class BookingController {
 
     )
     @PutMapping("/setAsAttended")
-    public ResponseEntity<ResponseDto> setBookingAsAttended(@RequestParam Long eventId,
-                                                          @RequestParam String userId,
-                                                          @AuthenticationPrincipal Jwt jwt){
+    public ResponseEntity<ResponseDto> setBookingAsAttended(@RequestParam String qrUUID,
+                                                            @AuthenticationPrincipal Jwt jwt) {
 
-        iBookingService.setBookingAsAttended(eventId,userId,jwt);
+        iBookingService.setBookingAsAttended(qrUUID, jwt);
 
         return ResponseEntity.status(OK).body(new ResponseDto(STATUS_200, MESSAGE_200));
     }

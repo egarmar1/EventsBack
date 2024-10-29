@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Schema(
         name = "BookingDto",
@@ -30,11 +31,6 @@ public class BookingResponseDto {
     @NotNull(message = "User id cannot be empty")
     private String userId;
 
-    @Schema(
-            description = "UUID of the QR that represents the booking", example = "1245f0187h5"
-    )
-    @NotNull(message = "User id cannot be empty")
-    private String qrUUID;
 
     @Schema(
             description = "Unique identifier of the service ", example = "12459018745"
@@ -52,6 +48,25 @@ public class BookingResponseDto {
     )
     @NotNull(message = "The state cannot be null")
     private State state;
+
+    @Schema(
+            description = "UUID of the QR that represents the booking", example = "1245f0187h5"
+    )
+    @NotNull(message = "User id cannot be empty")
+    private String qrUUID;
+
+    @Schema(
+            description = "Expiration of the QR image that is stored locally," +
+                    " so it will be deleted afterwards"
+    )
+    private LocalDateTime qrExpirationDate;
+
+    @Schema(
+            description = "Expiration of the QR image that is stored locally," +
+                    " so it will be deleted afterwards"
+    )
+    @NotNull(message = "QrIsDeleted parameter must be specified" )
+    private Boolean qrIsDeleted;
 
 
 }

@@ -46,6 +46,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(value = CurrentBookingsGreaterThanMaxException.class)
+    public ResponseEntity<ErrorResponseDto> handleCurrentBookingsGreaterThanMaxException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.CONFLICT,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponseDto);
+    }
     @ExceptionHandler(value = UnauthorizedException.class)
     public ResponseEntity<ErrorResponseDto> handleUnauthorizedException(Exception exc, WebRequest webReq){
 
@@ -58,6 +72,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDto> handleForbiddenException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.FORBIDDEN,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponseDto);
     }
 

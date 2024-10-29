@@ -41,5 +41,10 @@ eureka:
       defaultZone: "http://localhost:8071/eureka/"
 
 logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: DEBUG
   pattern:
     level: "%5p[${spring.application.name},%X{trace_id},%X{span_id}]"

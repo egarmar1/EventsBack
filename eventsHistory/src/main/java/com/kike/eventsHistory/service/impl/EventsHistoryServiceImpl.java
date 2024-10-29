@@ -3,13 +3,18 @@ package com.kike.eventsHistory.service.impl;
 import com.kike.eventsHistory.dto.EventsHistoryDto;
 import com.kike.eventsHistory.entity.EventsHistory;
 import com.kike.eventsHistory.exception.EventsHistoryAlreadyExistsException;
+import com.kike.eventsHistory.exception.MissingUserIdFromAdminException;
 import com.kike.eventsHistory.exception.ResourceNotFoundException;
+import com.kike.eventsHistory.exception.UnauthorizedException;
 import com.kike.eventsHistory.mapper.EventsHistoryMapper;
 import com.kike.eventsHistory.repository.EventsHistoryRepository;
 import com.kike.eventsHistory.service.IEventsHistoryService;
+import com.kike.eventsHistory.service.auth.JwtService;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +24,7 @@ import java.util.Optional;
 public class EventsHistoryServiceImpl implements IEventsHistoryService {
 
     private EventsHistoryRepository eventsHistoryRepository;
+    private JwtService jwtService;
     private static final Logger log = LoggerFactory.getLogger(EventsHistoryServiceImpl.class);
 
     @Override
@@ -55,12 +61,29 @@ public class EventsHistoryServiceImpl implements IEventsHistoryService {
     }
 
     @Override
-    public EventsHistoryDto fetchByUserId(String userId) {
+    public EventsHistoryDto fetchByUserId(String userId, Jwt jwt) {
+        log.info("Starting fetchByUserId method...");
+        String targetUserId = getTargetUserId(userId, jwt);
 
-        EventsHistory eventsHistory = eventsHistoryRepository.findByUserId(userId).orElseThrow(
-                () -> new ResourceNotFoundException("EventHistory", "userId", userId)
+        EventsHistory eventsHistory = eventsHistoryRepository.findByUserId(targetUserId).orElseThrow(
+                () -> new ResourceNotFoundException("EventHistory", "userId", targetUserId)
         );
 
         return EventsHistoryMapper.mapToEventsHistoryDto(eventsHistory,new EventsHistoryDto());
+    }
+
+
+    @NotNull
+    private String getTargetUserId(String userId, Jwt jwt) {
+        if (jwt == null)
+            throw new UnauthorizedException("Oauth2 access token is required");
+
+        String actualUserId = jwtService.getRealmRoles(jwt).contains("admin") ?
+                userId : jwtService.getUserId(jwt);
+
+        if (actualUserId.isEmpty())
+            throw new MissingUserIdFromAdminException();
+
+        return actualUserId;
     }
 }

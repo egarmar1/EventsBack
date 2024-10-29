@@ -38,7 +38,6 @@ public class GatewayserverApplication {
                                 .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
                                         .setKeyResolver(userKeyResolver())))
                         .uri("lb://EVENT"))
-
                 .route(p -> p
                         .path("/fastbook/booking/**")
                         .filters(f -> f.rewritePath("/fastbook/booking/(?<segment>.*)", "/${segment}")
@@ -52,10 +51,17 @@ public class GatewayserverApplication {
                         )
                         .uri("lb://SUSCRIPTION"))
                 .route(p -> p
-                .path("/fastbook/users/**")
-                .filters(f -> f.rewritePath("/fastbook/users/(?<segment>.*)", "/${segment}")
-                )
-                .uri("lb://USERS")).build();
+                        .path("/fastbook/users/**")
+                        .filters(f -> f.rewritePath("/fastbook/users/(?<segment>.*)", "/${segment}")
+                        )
+                        .uri("lb://USERS"))
+
+                .route(p -> p
+                        .path("/fastbook/eventsHistory/**")
+                        .filters(f -> f.rewritePath("/fastbook/eventsHistory/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://EVENTSHISTORY"))
+
+                .build();
 
 
     }

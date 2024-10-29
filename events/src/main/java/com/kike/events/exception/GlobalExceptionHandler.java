@@ -65,13 +65,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         var errorResponseDto = new ErrorResponseDto(
                 webReq.getDescription(false),
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.CONFLICT,
                 exc.getMessage(),
                 LocalDateTime.now()
         );
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.CONFLICT)
                 .body(errorResponseDto);
     }
 

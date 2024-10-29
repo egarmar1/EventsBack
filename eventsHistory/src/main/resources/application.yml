@@ -17,6 +17,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:8060/realms/master/protocol/openid-connect/certs"
   cloud:
     function:
       definition: createEventHistory;

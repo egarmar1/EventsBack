@@ -13,6 +13,9 @@ public class BookingResponseMapper {
         bookingResponseDto.setEventId(booking.getEventId());
         bookingResponseDto.setQrUUID(booking.getQrUUID());
         bookingResponseDto.setUserId(booking.getUserId());
+        bookingResponseDto.setQrExpirationDate(booking.getQrExpirationDate());
+        bookingResponseDto.setQrIsDeleted(booking.getQrIsDeleted());
+
 
         return bookingResponseDto;
     }
@@ -26,6 +29,8 @@ public class BookingResponseMapper {
         booking.setUserId(bookingResponseDto.getUserId());
         booking.setBookDate(bookingResponseDto.getBookDate());
         booking.setState(bookingResponseDto.getState());
+        booking.setQrExpirationDate(bookingResponseDto.getQrExpirationDate());
+        booking.setQrIsDeleted(bookingResponseDto.getQrIsDeleted());
 
         return booking;
     }

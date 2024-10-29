@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.*;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @Schema(
-        name = "BookingDto",
-        description = "Schema to hold booking information"
+        name = "BookingKafkaMessageDto",
+        description = "Schema to hold kafka message information"
 )
 @Data
 @AllArgsConstructor
@@ -59,6 +59,6 @@ public class BookingKafkaMessageDto {
     @Schema(
             description = "Jwt token, messages will use it to check permissions"
     )
-    private Jwt jwt;
+    private String jwt;
 
 }

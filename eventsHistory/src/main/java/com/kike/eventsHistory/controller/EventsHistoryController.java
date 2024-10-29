@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kike.eventsHistory.constants.EventsHistoryConstants.*;
@@ -30,9 +32,10 @@ public class EventsHistoryController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<EventsHistoryDto> getEventsHistoryByUserId(@RequestParam String userId){
+    public ResponseEntity<EventsHistoryDto> getEventsHistoryByUserId(@RequestParam(required = false) String userId,
+                                                                     @AuthenticationPrincipal Jwt jwt){
 
-        EventsHistoryDto eventsHistoryDto = eventsHistoryService.fetchByUserId(userId);
+        EventsHistoryDto eventsHistoryDto = eventsHistoryService.fetchByUserId(userId, jwt);
 
         return ResponseEntity
                 .status(OK)

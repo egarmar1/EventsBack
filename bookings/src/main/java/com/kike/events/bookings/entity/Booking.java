@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter @Setter @ToString
@@ -18,10 +19,12 @@ public class Booking extends BaseEntity {
     private Long eventId;
     private LocalDateTime bookDate;
 
-    @Column(name = "qr_code_in_base64", length = 2048)  // Aseguramos que tenga 2048 caracteres
-    private String qrUUID;
     @Enumerated(EnumType.STRING)
     private State state;
+    private String qrUUID;
+    private LocalDateTime qrExpirationDate;
+    private Boolean qrIsDeleted;
+
 
 
 }

@@ -23,6 +23,7 @@ public class SecurityConfig {
         serverHttpSecurity.authorizeExchange(exchange -> exchange
                         .pathMatchers("/fastbook/**").hasRole("USER")
                         .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers("/fastbook/eventsHistory/**").permitAll()
                 )
                 .oauth2ResourceServer(o -> o.jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
 

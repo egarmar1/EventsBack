@@ -44,12 +44,13 @@ public class MessageFunctions {
                 helper.setText(emailDto.getBody(), true);  // Cuerpo del correo (true para HTML)
 
                 if (emailDto.getUrlImage() != null && !emailDto.getUrlImage().isEmpty()){
-                    byte[] qrImage = fetchQrCodeWithJwt(emailDto.getUrlImage(), emailDto.getJwt().toString());
+                    byte[] qrImage = fetchQrCodeWithJwt(emailDto.getUrlImage(), emailDto.getJwt());
                     helper.addAttachment("qr-code.png", new ByteArrayDataSource(qrImage,"image/png"));
                 }
 
-                // Enviar el correo
-                javaMailSender.send(message);
+                log.info("not sending email because i don't want to send emails everytime I create a booking");
+//                javaMailSender.send(message);
+
                 log.info("Email sent successfully to: {}", emailDto.getRecipientEmail());
 
             } catch (Exception e) {
@@ -62,14 +63,15 @@ public class MessageFunctions {
 
     private byte[] fetchQrCodeWithJwt(String qrCodeUrl, String jwtToken){
 
+        log.info("jwtToken is : " + jwtToken);
         return webClientBuilder
                 .build()
                 .get()
                 .uri(qrCodeUrl)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer : " + jwtToken)
-                .accept(MediaType.IMAGE_PNG)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                 .retrieve()
                 .bodyToMono(byte[].class)
                 .block();
+
     }
 }

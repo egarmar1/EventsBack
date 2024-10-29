@@ -11,8 +11,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.time.LocalDateTime;
 
 @Schema(
-        name = "BookingDto",
-        description = "Schema to hold booking information"
+        name = "BookingKafkaMessageDto",
+        description = "Schema to hold kafka message information"
 )
 @Data
 @AllArgsConstructor
@@ -57,7 +57,7 @@ public class BookingKafkaMessageDto {
     @Schema(
             description = "Jwt token, messages will use it to check permissions"
     )
-    private Jwt jwt;
+    private String jwt;
 
 
 }

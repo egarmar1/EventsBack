@@ -27,6 +27,8 @@ public class QrController {
 
         byte[] qrImage = bookingService.fetchQr(bookingId , jwt);
 
-        return ResponseEntity.status(HttpStatus.OK).body(qrImage);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.IMAGE_PNG)
+                .body(qrImage);
     }
 }

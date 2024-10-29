@@ -15,7 +15,7 @@ public interface EventsFeignClient {
     @PutMapping(value = "/api/update/currentBookingsCount")
     public ResponseEntity<ResponseDto> updateCurrentBookingsCount(@RequestParam Long eventId);
 
-    @GetMapping("/fetch")
+    @GetMapping("/api/fetch")
     public ResponseEntity<EventResponseDto> fetchEvent(@Valid @RequestParam Long id);
 
 }
