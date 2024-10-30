@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -55,6 +56,7 @@ public class EventControllerTest {
     @DisplayName("GIVEN an event information WHEN the createEvent method from the event controller is called THEN an event is created with the provided information")
     void createEventTest() {
 
+        Jwt jwt = mock(Jwt.class);
         Long id = 1412L;
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
@@ -66,11 +68,11 @@ public class EventControllerTest {
         EventCreateDto eventCreateDto = new EventCreateDto(title, description, price, vendorId, availability, maxNumBookings);
         EventResponseDto eventResponseDto = new EventResponseDto(id, title, description, price, vendorId, availability,maxNumBookings, 0L);
 
-        when(iEventService.createEvent(eventCreateDto)).thenReturn(eventResponseDto);
+        when(iEventService.createEvent(eventCreateDto, jwt)).thenReturn(eventResponseDto);
 
-        ResponseEntity<EventResponseDto> response = eventController.createEvent(eventCreateDto);
+        ResponseEntity<EventResponseDto> response = eventController.createEvent(eventCreateDto, jwt);
 
-        verify(iEventService, times(1)).createEvent(eventCreateDto);
+        verify(iEventService, times(1)).createEvent(eventCreateDto, jwt);
 
         assertEquals(response.getBody(), eventResponseDto);
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
@@ -80,6 +82,7 @@ public class EventControllerTest {
     @DisplayName("GIVEN an existing ID WHEN the fetchEvent method from the event controller is called THEN an event is return")
     void fetchEventTest() {
 
+        Jwt jwt = mock(Jwt.class);
         Long id = 1412L;
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
@@ -90,11 +93,11 @@ public class EventControllerTest {
 
         EventResponseDto eventResponseDto = new EventResponseDto(id, title, description, price, vendorId, availability,maxNumBookings, 0L);
 
-        when(iEventService.fetchEvent(id)).thenReturn(eventResponseDto);
+        when(iEventService.fetchEvent(id,jwt)).thenReturn(eventResponseDto);
 
-        ResponseEntity<EventResponseDto> response = eventController.fetchEvent(id);
+        ResponseEntity<EventResponseDto> response = eventController.fetchEvent(id,jwt);
 
-        verify(iEventService, times(1)).fetchEvent(id);
+        verify(iEventService, times(1)).fetchEvent(id, jwt);
 
         assertEquals(response.getBody(), eventResponseDto);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
@@ -105,6 +108,8 @@ public class EventControllerTest {
     void updateEventTest() {
 
         Long id = 1412L;
+        Jwt jwt = mock(Jwt.class);
+
         String title = "Bachata Class in center of Valencia";
         String description = "Bachata Class in center of Valencia, on day 25 of october, no minimum level required ";
         BigDecimal price = new BigDecimal("10.9");
@@ -114,11 +119,10 @@ public class EventControllerTest {
 
         EventUpdateDto eventResponseDto = new EventUpdateDto(id, title, description, price, vendorId, availability, maxNumBookings);
 
-        when(iEventService.updateEvent(eventResponseDto)).thenReturn(true);
+        when(iEventService.updateEvent(eventResponseDto, jwt)).thenReturn(true);
+        ResponseEntity<ResponseDto> response = eventController.updateEvent(eventResponseDto, jwt);
 
-        ResponseEntity<ResponseDto> response = eventController.updateEvent(eventResponseDto);
-
-        verify(iEventService, times(1)).updateEvent(eventResponseDto);
+        verify(iEventService, times(1)).updateEvent(eventResponseDto, jwt);
 
         assertEquals(Objects.requireNonNull(response.getBody()).getStatusCode(), STATUS_200);
         assertEquals(response.getBody().getStatusMsg(), MESSAGE_200);
@@ -129,10 +133,11 @@ public class EventControllerTest {
     void deleteEventTest() {
 
         Long id = 1412L;
+        Jwt jwt = mock(Jwt.class);
 
-        ResponseEntity<ResponseDto> response = eventController.deleteEvent(id);
+        ResponseEntity<ResponseDto> response = eventController.deleteEvent(id, jwt);
 
-        verify(iEventService, times(1)).deleteEvent(id);
+        verify(iEventService, times(1)).deleteEvent(id, jwt);
 
         assertEquals(Objects.requireNonNull(response.getBody()).getStatusCode(), STATUS_200);
         assertEquals(response.getBody().getStatusMsg(), MESSAGE_200);

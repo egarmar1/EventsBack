@@ -8,6 +8,7 @@ import com.kike.events.dto.client.EventsHistoryDto;
 import com.kike.events.dto.client.UserTypeDto;
 import com.kike.events.entity.Event;
 import com.kike.events.exception.CurrentBookingsGreaterThanMaxException;
+import com.kike.events.exception.ForbiddenException;
 import com.kike.events.exception.IncorrectTypeOfUserException;
 import com.kike.events.exception.ResourceNotFoundException;
 import com.kike.events.mapper.EventCreateMapper;
@@ -15,13 +16,19 @@ import com.kike.events.mapper.EventResponseMapper;
 import com.kike.events.mapper.EventUpdateMapper;
 import com.kike.events.repository.EventRepository;
 import com.kike.events.service.IEventService;
+import com.kike.events.service.auth.JwtService;
 import com.kike.events.service.client.UserFeignClient;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 
 @Service
@@ -33,12 +40,21 @@ public class EventServiceImpl implements IEventService {
     private EventRepository eventRepository;
     private StreamBridge streamBridge;
     private UserFeignClient userFeignClient;
+    private JwtService jwtService;
 
     @Override
-    public EventResponseDto createEvent(EventCreateDto eventCreateDto) {
+    public EventResponseDto createEvent(EventCreateDto eventCreateDto, Jwt jwt) {
 
         String vendorId = eventCreateDto.getVendorId();
-        checkTypeVendor(vendorId);
+        String vendorIdJwt = jwt.getClaim("sub");
+
+
+        if (!Objects.equals(vendorId, vendorIdJwt) && !isAdmin(jwt)) {
+            throw new ForbiddenException("You are not allowed to create the event " +
+                    " for vendor with id: " + vendorId);
+        }
+
+        checkTypeVendor(vendorId, jwt);
 
 
         Event event = EventCreateMapper.mapToEvents(eventCreateDto, new Event());
@@ -55,27 +71,43 @@ public class EventServiceImpl implements IEventService {
         return EventResponseMapper.mapToEventResponseDto(savedEvent, new EventResponseDto());
     }
 
-    private void checkTypeVendor(String vendorId) {
-        ResponseEntity<UserTypeDto> typeResponse = userFeignClient.getType(vendorId);
+    private void checkTypeVendor(String vendorId, Jwt jwt) {
+        try {
+            ResponseEntity<UserTypeDto> typeResponse = userFeignClient.getType(vendorId);
 
-        String type = typeResponse.getBody().getType();
 
-        if(!type.equals("vendor"))
-            throw new IncorrectTypeOfUserException(vendorId,"vendor", type);
+            String type = typeResponse.getBody().getType();
+            if (!type.equals("vendor") && !isAdmin(jwt))
+                throw new IncorrectTypeOfUserException(vendorId, "vendor", type);
+
+        } catch (FeignException feignException) {
+            if (feignException.status() == HttpStatus.NOT_FOUND.value())
+                throw new ResourceNotFoundException("UserType", "userId", vendorId);
+        }
+
     }
 
     @Override
-    public EventResponseDto fetchEvent(Long id) {
+    public EventResponseDto fetchEvent(Long id, Jwt jwt) {
 
         Event event = eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Event", "id", id.toString()));
+
+        if (!isAdmin(jwt) && !Objects.equals(event.getVendorId(), jwt.getClaim("sub")))
+            throw new ForbiddenException("You don't have permissions for info about event with id  " + id);
 
         return EventResponseMapper.mapToEventResponseDto(event, new EventResponseDto());
     }
 
     @Override
-    public boolean updateEvent(EventUpdateDto eventUpdateDto) {
+    public boolean updateEvent(EventUpdateDto eventUpdateDto, Jwt jwt) {
 
-        checkTypeVendor(eventUpdateDto.getVendorId());
+        String vendorIdDto = eventUpdateDto.getVendorId();
+        String vendorIdJwt = jwt.getClaim("sub");
+
+        if (!Objects.equals(vendorIdDto, vendorIdJwt) && !isAdmin(jwt)) {
+            throw new ForbiddenException("You are not allowed to change the vendor" +
+                    " of the event with id: " + eventUpdateDto.getId());
+        }
 
         boolean isUpdated = false;
 
@@ -84,6 +116,11 @@ public class EventServiceImpl implements IEventService {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new ResourceNotFoundException("Event", "id", eventId.toString()));
 
+
+        if (!Objects.equals(event.getVendorId(), vendorIdJwt) && !isAdmin(jwt)) {
+            throw new ForbiddenException("You are not allowed to change" +
+                    " the event with id: " + eventUpdateDto.getId());
+        }
 
         if (event.getCurrentNumBookings() > eventUpdateDto.getMaxNumBookings())
             throw new CurrentBookingsGreaterThanMaxException(event.getCurrentNumBookings(),
@@ -102,15 +139,27 @@ public class EventServiceImpl implements IEventService {
         return isUpdated;
     }
 
-    @Override
-    public void deleteEvent(Long id) {
+    private boolean isAdmin(Jwt jwt) {
+        return jwtService.getRealmRoles(jwt).contains("admin");
+    }
 
-        eventRepository.findById(id).orElseThrow(
+    @Override
+    public void deleteEvent(Long id, Jwt jwt) {
+
+
+        Event event = eventRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Event", "id", id.toString())
         );
 
+        Object vendorIdJwt = jwt.getClaim("sub");
+
+        if (!Objects.equals(event.getVendorId(), vendorIdJwt) && !isAdmin(jwt)) {
+            throw new ForbiddenException("You are not allowed to change" +
+                    " the event with id: " + id);
+        }
+
         eventRepository.deleteById(id);
-        streamBridge.send("deleteBookingsOfEvent-out-0",id);
+        streamBridge.send("deleteBookingsOfEvent-out-0", id);
 
     }
 
@@ -133,5 +182,6 @@ public class EventServiceImpl implements IEventService {
         eventRepository.save(event);
         return true;
     }
+
 
 }

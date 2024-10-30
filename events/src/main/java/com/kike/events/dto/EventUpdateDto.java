@@ -42,7 +42,6 @@ public class EventUpdateDto {
     @Schema(
             description = "Unique identifier for vendor", example = "154"
     )
-    @Positive(message = "Vendor must be a positive number")
     private String vendorId;
 
     @Schema(

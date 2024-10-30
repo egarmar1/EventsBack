@@ -17,6 +17,8 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kike.events.constants.EventConstants.*;
@@ -61,9 +63,10 @@ public class EventController {
 
     )
     @PostMapping("/create")
-    public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto) {
+    public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto,
+                                                        @AuthenticationPrincipal Jwt jwt) {
         log.info("Executing method createEvent");
-        EventResponseDto eventResponseDto = iEventService.createEvent(eventCreateDto);
+        EventResponseDto eventResponseDto = iEventService.createEvent(eventCreateDto, jwt);
 
         log.info("Executing middle method createEvent");
         streamBridge.send("event-creation-trigger",
@@ -104,13 +107,16 @@ public class EventController {
 
     )
     @GetMapping("/fetch")
-    public ResponseEntity<EventResponseDto> fetchEvent(@Valid @RequestParam Long id) {
+    public ResponseEntity<EventResponseDto> fetchEvent(@Valid @RequestParam Long id,
+                                                       @AuthenticationPrincipal Jwt jwt) {
 
-        log.info("Fetch method before getting event");
+        log.info("Starting fetchEvent method from controller ..");
 
-        EventResponseDto eventResponseDto = iEventService.fetchEvent(id);
+        EventResponseDto eventResponseDto = iEventService.fetchEvent(id, jwt);
 
         log.info("Fetch method after getting event {}", eventResponseDto);
+
+        log.info("Finishing fetchEvent method from controller ...");
         return ResponseEntity
                 .status(OK)
                 .body(eventResponseDto);
@@ -143,9 +149,10 @@ public class EventController {
 
     )
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateEvent(@Valid @RequestBody EventUpdateDto eventUpdateDto) {
+    public ResponseEntity<ResponseDto> updateEvent(@Valid @RequestBody EventUpdateDto eventUpdateDto,
+                                                   @AuthenticationPrincipal Jwt jwt) {
 
-        boolean isUpdated = iEventService.updateEvent(eventUpdateDto);
+        boolean isUpdated = iEventService.updateEvent(eventUpdateDto, jwt);
 
         if (isUpdated)
             return ResponseEntity
@@ -185,10 +192,10 @@ public class EventController {
 
     )
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteEvent(@RequestParam Long id) {
+    public ResponseEntity<ResponseDto> deleteEvent(@RequestParam Long id,
+                                                   @AuthenticationPrincipal Jwt jwt) {
 
-        iEventService.deleteEvent(id);
-
+        iEventService.deleteEvent(id, jwt);
 
 
         return ResponseEntity

@@ -59,6 +59,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(errorResponseDto);
     }
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDto> handleForbiddenException(Exception exc, WebRequest webReq){
+
+        var errorResponseDto = new ErrorResponseDto(
+                webReq.getDescription(false),
+                HttpStatus.FORBIDDEN,
+                exc.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errorResponseDto);
+    }
 
     @ExceptionHandler(value = CurrentBookingsGreaterThanMaxException.class)
     public ResponseEntity<ErrorResponseDto> handleCurrentBookingsGreaterThanMaxException(Exception exc, WebRequest webReq){

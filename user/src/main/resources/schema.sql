@@ -32,9 +32,10 @@ CREATE TABLE IF NOT EXISTS user_type (
 INSERT INTO users (id, full_name, email, type_id, created_at, created_by, updated_at, updated_by) VALUES
 ('ea9493bf-496e-4c32-9e61-d673c92812cb', 'John Doe', 'kikesimp01@gmail.com', 1, NOW(), 'system', NULL, NULL), -- Client user And admin
 ('ae20ff9f-b43f-4818-b36c-03440ea98fd4', 'John Client', 'clientnoadminn@test.com', 1, NOW(), 'system', NULL, NULL), -- Client user And NOT admin
-('c21a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor1', 'zxc@example.com', 2, NOW(), 'system', NULL, NULL), -- Vendor user / Admin
+('c21a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor1', 'zxc@example.com', 2, NOW(), 'system', NULL, NULL), -- Vendor user / NO Admin
 (UUID(), 'Bob Johnson', 'bob.johnson@example.com', 1, NOW(), 'system', NULL, NULL), -- Client user
-('c31a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor2', 'bob.johnson2@example.com', 2, NOW(), 'system', NULL, NULL); -- Vendor user
+('c31a4735-e357-4c18-99e9-b54da83dd89b', 'Vendor2', 'bob.johnson2@example.com', 2, NOW(), 'system', NULL, NULL), -- Vendor user
+('f3c8e051-a170-4c50-8471-0543643c6899', 'Admin', 'admin@admin.com', 1, NOW(), 'system', NULL, NULL); -- Admin
 
 
 INSERT INTO user_type (type, created_at, created_by, updated_at, updated_by) VALUES
