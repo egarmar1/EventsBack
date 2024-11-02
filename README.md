@@ -28,14 +28,12 @@ Las tecnologías utilizadas se encuentran en la [Arquitectura](#arquitectura)
 
 - **Keycloak**: IAM utilizado para la gestión de usuarios, contraseñas, roles ... y toda la autorización y autenticación
   
-- **OAuth 2.0 y JWT**: Toda la seguridad ha sido cubierta con Oauth2.0, usando el **Authorization Code Grant Type**, y con el uso de JWTs proporcionados por Keycloak para la autorización.
+- **OAuth 2.0, JWT y Spring Security**: Toda la seguridad ha sido cubierta con Oauth2.0, usando el **Authorization Code Grant Type**, y con el uso de JWTs proporcionados por Keycloak para la autorización.
   
 - **[Docker y Docker Compose](https://github.com/egarmar1/EventsBack/tree/main/docker-compose)**: También se ha hace uso de docker y docker Compose para la contenerización de los microservicios
 - **[Grafana, Loki, prometheus y tempo](https://github.com/egarmar1/EventsBack/tree/main/docker-compose/observability)**: Estas herramientas han proporcionado monitoreo de métricas(prometheus), gestión de logs(loki), y tracing (Tempo). Y todo esto es visible y monitorizado gracias a grafana.
 - **[OpenAPI](https://egarmar1.github.io/Documentar-APIs-en-Spring-Boot-con-OpenAPI/#)**: Estas herramientas han proporcionado monitoreo de métricas(prometheus), gestión de logs(loki), y tracing (Tempo). Y todo esto es visible y monitorizado gracias a grafana.
-  
-
-
+- **[Junit5 y mockito](https://github.com/egarmar1/EventsBack/tree/main/events/src/test/java/com/kike/events/service/impl)**: Testeo unitario del microservicio Events usando Mockito y JUnit 5, asegurando la mantenibilidad al simular dependencias externas y enfocarse en la lógica de negocio interna. Esto permite comprobar los flujos principales, como la creación de eventos, autorizaciones y restricciones de usuario, y excepciones específicas. La estructura Given-When-Then facilita el mantenimiento y la legibilidad de los tests, permitiendo aislar cada flujo y cubrir diversos casos de uso del servicio.
 ---
 
 ## Estructura de los Microservicios
