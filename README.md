@@ -3,7 +3,6 @@
 ## Tabla de Contenidos
 
 - [Proyecto de Microservicios para Gestión de Eventos](#proyecto-de-microservicios-para-gestión-de-eventos)
-  - [Tabla de Contenidos](#tabla-de-contenidos)
   - [Descripción del Proyecto](#descripción-del-proyecto)
   - [Arquitectura](#arquitectura)
   - [Estructura de los Microservicios](#estructura-de-los-microservicios)
@@ -12,9 +11,9 @@
 
 ## Descripción del Proyecto
 
-Este proyecto presenta una aplicación de eventos, permite crear eventos a vendedores, y por otra parte los usuarios de tipo **client** pueden reservar una plaza en estos eventos. La aplicación está desarrollada con Spring Boot y sigue un diseño de microservicios para garantizar escalabilidad y modularidad.
+Este proyecto presenta una aplicación de eventos, permite a vendedores crear eventos , y por otra parte da la posiblidad a clientes de realizar reservas en estos eventos. La aplicación está desarrollada con Spring Boot y sigue un diseño de microservicios para garantizar escalabilidad y modularidad.
 
-En la tabla de contenidos se pueden encontrar todas las tecnologías utilizadas, además de la arquitectura, microservicios, y múltiples funcionalidades ...
+Las tecnologías utilizadas se encuentran en la [Arquitectura](#arquitectura)
 
 ---
 
