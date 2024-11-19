@@ -58,9 +58,12 @@ public class EventController {
                             content = @Content(
                                     schema = @Schema(implementation = ErrorResponseDto.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "HTTP Status FORBIDDEN"
                     )
             }
-
     )
     @PostMapping("/create")
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventCreateDto eventCreateDto,
@@ -102,6 +105,10 @@ public class EventController {
                             content = @Content(
                                     schema = @Schema(implementation = ErrorResponseDto.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "HTTP Status FORBIDDEN"
                     )
             }
 
@@ -187,12 +194,19 @@ public class EventController {
                             content = @Content(
                                     schema = @Schema(implementation = ErrorResponseDto.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "HTTP Status FORBIDDEN",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
                     )
             }
 
     )
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteEvent(@RequestParam Long id,
+    public ResponseEntity<ResponseDto> deleteEvent(@RequestParam @Valid Long id,
                                                    @AuthenticationPrincipal Jwt jwt) {
 
         iEventService.deleteEvent(id, jwt);

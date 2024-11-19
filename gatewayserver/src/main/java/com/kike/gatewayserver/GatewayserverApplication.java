@@ -41,8 +41,8 @@ public class GatewayserverApplication {
                 .route(p -> p
                         .path("/fastbook/booking/**")
                         .filters(f -> f.rewritePath("/fastbook/booking/(?<segment>.*)", "/${segment}")
-                                .circuitBreaker(config -> config.setName("bookingCircuitBreaker")
-                                        .setFallbackUri("forward:/contactSupport"))
+//                                .circuitBreaker(config -> config.setName("bookingCircuitBreaker")
+//                                        .setFallbackUri("forward:/contactSupport"))
                         )
                         .uri("lb://BOOKING"))
                 .route(p -> p

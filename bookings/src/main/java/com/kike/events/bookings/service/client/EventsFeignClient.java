@@ -1,5 +1,6 @@
 package com.kike.events.bookings.service.client;
 
+import com.kike.events.bookings.config.FeignClientConfiguration;
 import com.kike.events.bookings.dto.ResponseDto;
 import com.kike.events.bookings.dto.client.EventResponseDto;
 import jakarta.validation.Valid;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "event")
+@FeignClient(name = "event", configuration = FeignClientConfiguration.class)
 public interface EventsFeignClient {
 
     @PutMapping(value = "/api/update/currentBookingsCount")

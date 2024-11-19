@@ -136,7 +136,7 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = bookingRepository.findByUserIdAndEventId(actualUser, eventId).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "userId or eventId", actualUser + " and " + eventId + " respectively"));
 
-        if (!jwtService.getRealmRoles(jwt).contains("admin") && !Objects.equals(booking.getUserId(), userId)) {
+        if (!jwtService.getRealmRoles(jwt).contains("admin") && !Objects.equals(booking.getUserId(), actualUser)) {
             throw new ForbiddenException("You don't have permissions for info about user " + booking.getUserId());
         }
 
@@ -222,8 +222,6 @@ public class BookingServiceImpl implements IBookingService {
         log.info("eventsHistoryDto: " + eventsHistoryDto);
 
         eventsHistoryFeignClient.updateEventHistory(eventsHistoryDto);
-
-
     }
 
     @Override

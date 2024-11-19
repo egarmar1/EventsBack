@@ -94,13 +94,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         var errorResponseDto = new ErrorResponseDto(
                 webReq.getDescription(false),
-                HttpStatus.UNAUTHORIZED,
+                HttpStatus.FORBIDDEN,
                 exc.getMessage(),
                 LocalDateTime.now()
         );
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponseDto);
     }
 }

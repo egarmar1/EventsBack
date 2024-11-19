@@ -53,6 +53,7 @@ public class EventUpdateDto {
     @Schema(
             description = "Maximum number of accepted bookings in an event", example = "50"
     )
+    @PositiveOrZero(message = "Maximum num of bookings must be greater or equal than zero")
     private Long maxNumBookings;
 
 }
