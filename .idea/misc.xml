@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/notifications/pom.xml" />
         <option value="$PROJECT_DIR$/eventsHistory/pom.xml" />
         <option value="$PROJECT_DIR$/keycloak-event-listener/pom.xml" />
+        <option value="$PROJECT_DIR$/eventReviews/pom.xml" />
       </list>
     </option>
   </component>

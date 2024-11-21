@@ -60,7 +60,10 @@ public class GatewayserverApplication {
                         .path("/fastbook/eventsHistory/**")
                         .filters(f -> f.rewritePath("/fastbook/eventsHistory/(?<segment>.*)", "/${segment}"))
                         .uri("lb://EVENTSHISTORY"))
-
+                .route(p -> p
+                        .path("/review/eventsHistory/**")
+                        .filters(f -> f.rewritePath("/fastbook/review/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://REVIEW"))
                 .build();
 
 

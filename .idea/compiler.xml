@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eurekaserver" />
         <module name="gatewayserver" />
+        <module name="eventReviews" />
         <module name="eventsHistory" />
         <module name="keycloak-event-listener" />
         <module name="suscription" />
@@ -24,6 +25,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="bookings" options="-parameters" />
       <module name="eurekaserver" options="-parameters" />
+      <module name="eventReviews" options="-parameters" />
       <module name="events" options="-parameters" />
       <module name="eventsHistory" options="-parameters" />
       <module name="gatewayserver" options="-parameters" />

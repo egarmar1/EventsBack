@@ -21,7 +21,7 @@ public class BookingCreateDto {
     @Schema(
             description = "Unique identifier of the service ", example = "12459018745"
     )
-    @NotNull(message = "Service id cannot be empty")
+    @NotNull(message = "Event id cannot be empty")
     private Long eventId;
 
     @Schema(

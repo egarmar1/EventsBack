@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -61,15 +63,36 @@ public class EventsHistoryServiceImpl implements IEventsHistoryService {
     }
 
     @Override
-    public EventsHistoryDto fetchByUserId(String userId, Jwt jwt) {
-        log.info("Starting fetchByUserId method...");
+    public List<EventsHistoryDto> fetchAllByUserId(String userId, Jwt jwt) {
+        log.info("Starting fetchAllByUserId method...");
         String targetUserId = getTargetUserId(userId, jwt);
 
-        EventsHistory eventsHistory = eventsHistoryRepository.findByUserId(targetUserId).orElseThrow(
-                () -> new ResourceNotFoundException("EventHistory", "userId", targetUserId)
-        );
+        List<EventsHistory> eventsHistories = eventsHistoryRepository.findByUserId(targetUserId);
 
-        return EventsHistoryMapper.mapToEventsHistoryDto(eventsHistory,new EventsHistoryDto());
+        if (eventsHistories.isEmpty())
+            throw new ResourceNotFoundException("EventHistory", "UserId", targetUserId);
+
+
+        return eventsHistories.stream()
+                .map(eventHistory ->
+                        EventsHistoryMapper
+                                .mapToEventsHistoryDto(eventHistory, new EventsHistoryDto()))
+                .toList();
+
+    }
+
+    @Override
+    public EventsHistoryDto fetchByUserIdAndEventId(String userId, Long eventId, Jwt jwt) {
+        log.info("Starting fetchByUserIdAndEventId method...");
+        String targetUserId = getTargetUserId(userId, jwt);
+
+        EventsHistory eventHistory = eventsHistoryRepository.findByUserIdAndEventId(targetUserId, eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event History",
+                        "userId " + "and " + "eventId",
+                        targetUserId + " and " + eventId + " respectevly"));
+
+        return EventsHistoryMapper.mapToEventsHistoryDto(eventHistory, new EventsHistoryDto());
+
     }
 
 

@@ -5,6 +5,7 @@ import com.kike.eventsHistory.entity.EventsHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,5 +13,5 @@ public interface EventsHistoryRepository extends JpaRepository<EventsHistory,Lon
 
     Optional<EventsHistory> findByUserIdAndEventId(String userId, Long eventId);
 
-    Optional<EventsHistory> findByUserId(String userId);
+    List<EventsHistory> findByUserId(String userId);
 }

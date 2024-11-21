@@ -2,7 +2,8 @@ package com.kike.eventsHistory.service;
 
 import com.kike.eventsHistory.dto.EventsHistoryDto;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 public interface IEventsHistoryService {
@@ -10,5 +11,7 @@ public interface IEventsHistoryService {
     void createEventHistory(EventsHistoryDto eventsHistoryDto);
     void updateEventHistory(EventsHistoryDto eventsHistoryDto);
 
-    EventsHistoryDto fetchByUserId(String userId, Jwt jwt);
+    List<EventsHistoryDto> fetchAllByUserId(String userId, Jwt jwt);
+
+    EventsHistoryDto fetchByUserIdAndEventId(String userId, Long eventId, Jwt jwt);
 }
